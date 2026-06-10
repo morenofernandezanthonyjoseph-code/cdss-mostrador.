@@ -1,0 +1,36 @@
+# Render Blueprint - crea los dos servicios automaticamente, ambos gratis.
+# En Render: "New +" -> "Blueprint" -> elegir este repo. Render lee este archivo.
+services:
+  # --- Backend (motor) - plan gratis ---
+  - type: web
+    name: cdss-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      # "*" permite que el frontend hable con el backend sin pegar URLs a mano.
+      # Cuando tengas dominio propio, cambialo por tu URL exacta.
+      - key: CDSS_CORS_ORIGINS
+        value: "*"
+
+  # --- Frontend (pantalla) - estatico, siempre gratis y nunca se duerme ---
+  - type: web
+    name: cdss-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: ./dist
+    envVars:
+      # IMPORTANTE: despues del primer deploy, pega aqui la URL del backend
+      # (la que termina en .onrender.com). sync:false = se configura a mano.
+      - key: VITE_API_BASE
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
