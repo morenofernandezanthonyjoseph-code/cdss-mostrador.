@@ -1,0 +1,13 @@
+{
+  "name": "CDSS de Mostrador",
+  "short_name": "CDSS",
+  "description": "Soporte a la decision farmaceutica en el mostrador.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBFCFD",
+  "theme_color": "#0B1220",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

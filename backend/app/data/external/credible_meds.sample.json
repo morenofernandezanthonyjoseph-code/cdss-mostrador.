@@ -1,0 +1,11 @@
+{
+  "version": "MUESTRA-SINTETICA",
+  "_aviso": "ESTO ES UNA MUESTRA FALSA solo para ver el formato. NO son datos reales de CredibleMeds. Reemplazar por la lista real (registrate en crediblemeds.org y aceptar su licencia), y guardar como credible_meds.json (sin .sample).",
+  "drugs": [
+    {"name": "azithromycin", "risk": "known"},
+    {"name": "haloperidol", "risk": "known"},
+    {"name": "ondansetron", "risk": "known"},
+    {"name": "escitalopram", "risk": "possible"},
+    {"name": "amiodarone", "risk": "known"}
+  ]
+}

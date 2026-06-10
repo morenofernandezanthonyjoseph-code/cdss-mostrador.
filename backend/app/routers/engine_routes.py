@@ -21,7 +21,7 @@ class EvalRequest(BaseModel):
 @router.post("/interactions")
 def interactions(req: EvalRequest):
     cart = [d.model_dump() for d in req.cart]
-    result = engine.evaluate(cart)
+    result = engine.evaluate(cart)  # incluye verdict, alerts, drug_flags
     result["food_alerts"] = engine.food_alerts(cart)
     return result
 
@@ -42,9 +42,34 @@ def recommend(q: str):
 
 @router.post("/reload")
 def reload_data():
-    """Recarga los JSON curados sin reiniciar el proceso (para el flujo de curaduria)."""
+    """Recarga los JSON curados y las fuentes externas sin reiniciar el proceso."""
     try:
         engine.reload()
     except Exception as e:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"No se pudo recargar: {e}")
     return {"reloaded": True, "drugs_version": engine.drugs_version(), "rules_version": engine.rules_payload().get("version")}
+
+
+@router.get("/sources")
+def sources_status():
+    """Estado de las fuentes externas opcionales (cargadas o no)."""
+    from .. import external
+    return external.status()
+
+
+@router.get("/attributions")
+def attributions():
+    """Creditos obligatorios por licencia. Mostrar cuando la fuente este cargada."""
+    from .. import external
+    st = external.status()
+    creds = [
+        {"source": "openFDA", "text": "Datos de etiquetas de la U.S. FDA (dominio publico, CC0). openFDA no avala este producto.", "always": True},
+        {"source": "RxNorm / RxClass", "text": "U.S. National Library of Medicine (NLM).", "always": True},
+    ]
+    if st["credible_meds"]["loaded"]:
+        creds.append({"source": "CredibleMeds", "text": "Listas de riesgo de QT/Torsades de CredibleMeds (AZCERT). Uso no comercial bajo su licencia.", "always": False})
+    if st["ddinter"]["loaded"]:
+        creds.append({"source": "DDInter 2.0", "text": "Interacciones de DDInter 2.0 (uso no comercial). Citar: Tian et al., Nucleic Acids Research.", "always": False})
+    if st["drugbank"]["loaded"]:
+        creds.append({"source": "DrugBank", "text": "Vocabulario de DrugBank. Datos academicos CC-BY-NC; Open Data CC0.", "always": False})
+    return {"attributions": creds}

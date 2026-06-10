@@ -26,5 +26,7 @@ export const api = {
     }),
   recommend: (q) => getJSON(`/api/recommend?q=${encodeURIComponent(q)}`),
   rules: () => getJSON(`/api/rules`),
+  attributions: () => getJSON(`/api/attributions`),
+  sources: () => getJSON(`/api/sources`),
   health: () => getJSON(`/health`),
 };

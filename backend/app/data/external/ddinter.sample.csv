@@ -1,0 +1,4 @@
+drug_a,drug_b,severity,mechanism,management
+warfarin,amiodarone,Major,La amiodarona inhibe el metabolismo de la warfarina y eleva el INR,Reducir dosis de warfarina y controlar INR mas seguido
+metformin,iodine contrast,Moderate,Riesgo de acidosis lactica por deterioro renal agudo,Suspender metformina alrededor del contraste segun funcion renal
+simvastatin,amlodipine,Moderate,Amlodipino aumenta la exposicion de simvastatina,Limitar simvastatina a 20 mg/dia con amlodipino

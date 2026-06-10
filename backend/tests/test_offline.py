@@ -71,3 +71,43 @@ def test_rules_versioned():
     body = r.json()
     assert "version" in body
     assert len(body["rules"]) >= 9
+
+
+# --- Cobertura ampliada (Fase 2) ---
+
+def _d(name, inn, tags):
+    return {"name": name, "inn": inn, "atc": "", "tags": tags}
+
+
+def test_opioid_benzo_red():
+    cart = {"cart": [_d("Tramadol", "tramadol", ["opioid"]), _d("Diazepam", "diazepam", ["benzodiazepine"])]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert r["verdict"] == "red"
+    assert any(a["id"] == "opioid-benzo" for a in r["alerts"])
+
+
+def test_dual_raas_red():
+    cart = {"cart": [_d("Enalapril", "enalapril", ["acei"]), _d("Losartan", "losartan", ["arb"])]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert any(a["id"] == "dual-raas" for a in r["alerts"])
+
+
+def test_multiple_alerts_per_pair():
+    cart = {"cart": [
+        _d("Warfarina", "warfarin", ["anticoagulant"]),
+        _d("Claritromicina", "clarithromycin", ["macrolide", "cyp3a4_inhibitor"]),
+    ]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert any(a["id"] == "anticoag-cyp3a4" for a in r["alerts"])
+
+
+def test_pregnancy_flag():
+    cart = {"cart": [_d("Warfarina", "warfarin", ["anticoagulant"])]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert any(f["drug"] == "Warfarina" for f in r["drug_flags"])
+
+
+def test_duplicate_nsaid():
+    cart = {"cart": [_d("Ibuprofeno", "ibuprofen", ["nsaid"]), _d("Diclofenaco", "diclofenac", ["nsaid"])]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert any(a["id"] == "nsaid-dup" for a in r["alerts"])

@@ -22,10 +22,15 @@ app = FastAPI(
     description="Soporte a la decision farmaceutica. Fuentes oficiales + curaduria propia.",
 )
 
+# Si CDSS_CORS_ORIGINS = "*" se permiten todos los origenes. En ese caso, por
+# regla del navegador, allow_credentials debe ser False (no usamos cookies aun,
+# asi que es seguro y simplifica el despliegue gratis sin pegar URLs a mano).
+_origins = config.CORS_ORIGINS
+_allow_credentials = "*" not in _origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=_origins,
+    allow_credentials=_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )

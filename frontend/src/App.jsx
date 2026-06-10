@@ -23,15 +23,17 @@ export default function App() {
   const [results, setResults] = useState([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [cart, setCart] = useState([]);            // {name,inn,atc,tags,rxcui,fda,cima}
-  const [evalResult, setEvalResult] = useState({ verdict: "green", alerts: [], food_alerts: [] });
+  const [evalResult, setEvalResult] = useState({ verdict: "green", alerts: [], food_alerts: [], drug_flags: [] });
   const [openAlert, setOpenAlert] = useState(null);
   const [detailAtc, setDetailAtc] = useState(null);
   const [indQuery, setIndQuery] = useState("");
   const [recommendation, setRecommendation] = useState(null);
   const [health, setHealth] = useState(null);
+  const [attributions, setAttributions] = useState([]);
   const searchRef = useRef(null);
 
   useEffect(() => { api.health().then(setHealth).catch(() => setHealth(null)); }, []);
+  useEffect(() => { api.attributions().then((d) => setAttributions(d.attributions || [])).catch(() => {}); }, []);
 
   // Busqueda en el backend (debounce)
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function App() {
 
   // Reevaluar interacciones cada vez que cambia el carrito
   useEffect(() => {
-    if (!cart.length) { setEvalResult({ verdict: "green", alerts: [], food_alerts: [] }); return; }
+    if (!cart.length) { setEvalResult({ verdict: "green", alerts: [], food_alerts: [], drug_flags: [] }); return; }
     const payload = cart.map(({ name, inn, atc, tags }) => ({ name, inn, atc, tags }));
     api.interactions(payload).then(setEvalResult).catch(() => {});
   }, [cart]);
@@ -122,6 +124,17 @@ export default function App() {
         </div>
       </div>
 
+      {evalResult.drug_flags && evalResult.drug_flags.length > 0 && (
+        <div style={{ background: C.redBg, borderBottom: `1px solid ${C.redLine}` }} className="px-5 py-2.5">
+          <div style={{ fontSize: 11, color: C.red }} className="font-mono uppercase font-semibold">Banderas de paciente</div>
+          {evalResult.drug_flags.map((f, i) => (
+            <div key={i} style={{ fontSize: 13.5, color: C.ink }}>
+              <strong>{f.drug}</strong> — {f.text}
+            </div>
+          ))}
+        </div>
+      )}
+
       <main className="p-5 grid gap-5" style={{ gridTemplateColumns: "minmax(240px,0.9fr) minmax(260px,1fr) minmax(280px,1.1fr)" }}>
         {/* Buscador */}
         <section style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
@@ -185,7 +198,9 @@ export default function App() {
                 return (
                   <div key={idx} style={{ border: `1px solid ${s.line}`, background: s.bg, borderRadius: 10 }}>
                     <button onClick={() => setOpenAlert(open ? null : idx)} className="cf w-full text-left px-3 py-2.5">
-                      <div style={{ fontSize: 11, color: s.color }} className="font-mono uppercase font-semibold">{s.label}</div>
+                      <div style={{ fontSize: 11, color: s.color }} className="font-mono uppercase font-semibold">
+                        {s.label}{a.source && a.source !== "curaduria_propia" ? ` · ${a.source}` : ""}
+                      </div>
                       <div style={{ fontSize: 14, fontWeight: 600 }}>{a.pair[0]} + {a.pair[1]}</div>
                     </button>
                     {open && (
@@ -251,6 +266,14 @@ export default function App() {
         </div>
         <div className="mt-4 px-4 py-3 rounded-lg" style={{ background: C.fdaBg, border: `1px solid ${C.fda}33`, fontSize: 13, lineHeight: 1.5 }}>
           <strong>Procedencia.</strong> Ficha, interacciones, indicaciones y advertencias de cada farmaco vienen del backend, que consulta <strong>openFDA</strong> (CC0) y, cuando aplica, <strong>CIMA/AEMPS</strong>. Las alertas de color y las lineas de tratamiento son <strong>curaduria propia</strong> (reglas versionadas). Orientativo: no sustituye el criterio clinico.
+          {attributions.length > 0 && (
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.fda}22`, fontSize: 12, color: C.sub }}>
+              <strong>Fuentes:</strong> {attributions.map((a, i) => (
+                <span key={i}>{i > 0 ? " · " : " "}{a.source}</span>
+              ))}
+              <div style={{ marginTop: 4 }}>{attributions.filter((a) => !a.always).map((a, i) => <div key={i}>{a.text}</div>)}</div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -283,7 +306,8 @@ export default function App() {
                   <FDABlock title="Indicaciones aprobadas" body={detail.fda.data.indications || "No disponible."} />
                   <FDABlock title="Advertencias y precauciones" body={detail.fda.data.warnings || "No disponible."} />
                   <FDABlock title="Contraindicaciones" body={detail.fda.data.contraindications || "No disponible."} />
-                  <div style={{ fontSize: 11, color: C.sub }} className="font-mono">Texto literal de la etiqueta FDA (CC0), en ingles. En produccion se complementa con CIMA en espanol.</div>
+                  <CimaBlock inn={detail.inn} name={detail.name} />
+                  <div style={{ fontSize: 11, color: C.sub }} className="font-mono">Texto literal de la etiqueta FDA (CC0), en ingles. La ficha en espanol viene de CIMA (AEMPS) cuando esta disponible.</div>
                 </>
               )}
             </div>
@@ -306,4 +330,46 @@ function FDABlock({ title, body, danger }) {
     <div style={{ fontSize: 11, color: danger ? C.red : C.fda }} className="font-mono uppercase font-semibold">{title}</div>
     <div style={{ fontSize: 13.5, lineHeight: 1.5, marginTop: 6, whiteSpace: "pre-wrap", maxHeight: 260, overflowY: "auto" }}>{body}</div>
   </div>);
+}
+
+function CimaBlock({ inn, name }) {
+  const [state, setState] = React.useState({ status: "idle" });
+  const load = async () => {
+    setState({ status: "loading" });
+    try {
+      // Probar primero por nombre en espanol; si no, por INN.
+      let r;
+      try { r = await api.cima(name); }
+      catch { r = await api.cima(inn); }
+      setState({ status: "ok", data: r });
+    } catch (e) {
+      setState({ status: "error", error: e.message });
+    }
+  };
+  return (
+    <div style={{ border: `1px solid ${C.line}`, borderRadius: 10 }} className="p-3">
+      <div style={{ fontSize: 11, color: C.green }} className="font-mono uppercase font-semibold">Ficha en espanol (CIMA / AEMPS)</div>
+      {state.status === "idle" && (
+        <button onClick={load} className="cf mt-2 px-3 py-1.5 rounded" style={{ border: `1px solid ${C.line}`, fontSize: 13 }}>Buscar ficha en espanol</button>
+      )}
+      {state.status === "loading" && <div style={{ fontSize: 13, color: C.sub, marginTop: 6 }}>Consultando CIMA...</div>}
+      {state.status === "error" && <div style={{ fontSize: 13, color: C.amber, marginTop: 6 }}>{state.error} (CIMA cubre medicamentos registrados en Espana.)</div>}
+      {state.status === "ok" && (
+        <div className="mt-2 flex flex-col gap-2">
+          {(state.data.resultados || []).length === 0 && <div style={{ fontSize: 13, color: C.sub }}>Sin coincidencias en CIMA.</div>}
+          {(state.data.resultados || []).map((m, i) => (
+            <div key={i} style={{ fontSize: 13, borderTop: i ? `1px solid ${C.line}` : "none", paddingTop: i ? 8 : 0 }}>
+              <div style={{ fontWeight: 600 }}>{m.nombre}</div>
+              <div style={{ color: C.sub }}>{m.labtitular}{m.receta ? " · con receta" : ""}</div>
+              {(m.docs || []).map((d, k) => d.url && (
+                <a key={k} href={d.url} target="_blank" rel="noreferrer" style={{ color: C.fda, fontSize: 12.5 }}>
+                  {d.tipo === 1 ? "Ficha tecnica" : d.tipo === 2 ? "Prospecto" : "Documento"} ↗
+                </a>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }

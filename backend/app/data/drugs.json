@@ -1,38 +1,827 @@
 {
-  "version": "2026.06.10",
-  "note": "Diccionario canonico. Editable por el equipo. inn = nombre internacional (ingles) para consultar openFDA; name = ES; syn = sinonimos/marcas para busqueda fonetica.",
+  "version": "2026.06.10-seed",
+  "source": "Catalogo semilla ampliado (curaduria). Correr scripts/enrich.py para expandir a cientos via RxClass.",
   "drugs": [
-    {"name":"Azitromicina","inn":"azithromycin","atc":"J01FA10","tags":["macrolide"],"syn":["azitromicina","zithromax"]},
-    {"name":"Claritromicina","inn":"clarithromycin","atc":"J01FA09","tags":["macrolide","cyp3a4_inhibitor"],"syn":["claritromicina"]},
-    {"name":"Amoxicilina","inn":"amoxicillin","atc":"J01CA04","tags":["penicillin"],"syn":["amoxicilina"]},
-    {"name":"Ciprofloxacino","inn":"ciprofloxacin","atc":"J01MA02","tags":["quinolone","chelation"],"syn":["ciprofloxacino","ciprofloxacina","cipro"]},
-    {"name":"Doxiciclina","inn":"doxycycline","atc":"J01AA02","tags":["tetracycline","chelation"],"syn":["doxiciclina"]},
-    {"name":"Atorvastatina","inn":"atorvastatin","atc":"C10AA05","tags":["statin","cyp3a4_substrate"],"syn":["atorvastatina","lipitor"]},
-    {"name":"Simvastatina","inn":"simvastatin","atc":"C10AA01","tags":["statin","cyp3a4_substrate"],"syn":["simvastatina"]},
-    {"name":"Rosuvastatina","inn":"rosuvastatin","atc":"C10AA07","tags":["statin"],"syn":["rosuvastatina","crestor"]},
-    {"name":"Ezetimiba","inn":"ezetimibe","atc":"C10AX09","tags":[],"syn":["ezetimiba","ezetimibe"]},
-    {"name":"Losartan","inn":"losartan","atc":"C09CA01","tags":["arb","antihypertensive"],"syn":["losartan"]},
-    {"name":"Enalapril","inn":"enalapril","atc":"C09AA02","tags":["acei","antihypertensive"],"syn":["enalapril"]},
-    {"name":"Captopril","inn":"captopril","atc":"C09AA01","tags":["acei","antihypertensive","empty_stomach"],"syn":["captopril"]},
-    {"name":"Amlodipino","inn":"amlodipine","atc":"C08CA01","tags":["ccb_dhp","antihypertensive"],"syn":["amlodipino","amlodipina"]},
-    {"name":"Verapamilo","inn":"verapamil","atc":"C08DA01","tags":["ccb_nondhp","cyp3a4_inhibitor"],"syn":["verapamilo","verapamil"]},
-    {"name":"Hidroclorotiazida","inn":"hydrochlorothiazide","atc":"C03AA03","tags":["thiazide","antihypertensive"],"syn":["hidroclorotiazida","hctz"]},
-    {"name":"Espironolactona","inn":"spironolactone","atc":"C03DA01","tags":["k_sparing"],"syn":["espironolactona"]},
-    {"name":"Warfarina","inn":"warfarin","atc":"B01AA03","tags":["anticoagulant","vit_k"],"syn":["warfarina","coumadin"]},
-    {"name":"Ibuprofeno","inn":"ibuprofen","atc":"M01AE01","tags":["nsaid"],"syn":["ibuprofeno"]},
-    {"name":"Diclofenaco","inn":"diclofenac","atc":"M01AB05","tags":["nsaid"],"syn":["diclofenaco","diclofenac"]},
-    {"name":"Paracetamol","inn":"acetaminophen","atc":"N02BE01","tags":["analgesic"],"syn":["paracetamol","acetaminofen"]},
-    {"name":"Tramadol","inn":"tramadol","atc":"N02AX02","tags":["opioid","serotonergic"],"syn":["tramadol"]},
-    {"name":"Sertralina","inn":"sertraline","atc":"N06AB06","tags":["ssri","serotonergic"],"syn":["sertralina","zoloft"]},
-    {"name":"Fluoxetina","inn":"fluoxetine","atc":"N06AB03","tags":["ssri","serotonergic","cyp3a4_inhibitor"],"syn":["fluoxetina","prozac"]},
-    {"name":"Sildenafilo","inn":"sildenafil","atc":"G04BE03","tags":["pde5"],"syn":["sildenafilo","sildenafil","viagra"]},
-    {"name":"Isosorbida (mononitrato)","inn":"isosorbide mononitrate","atc":"C01DA14","tags":["nitrate"],"syn":["isosorbida","mononitrato de isosorbida"]},
-    {"name":"Digoxina","inn":"digoxin","atc":"C01AA05","tags":["digoxin"],"syn":["digoxina"]},
-    {"name":"Levotiroxina","inn":"levothyroxine","atc":"H03AA01","tags":["levothyroxine","empty_stomach"],"syn":["levotiroxina","eutirox","synthroid"]},
-    {"name":"Metformina","inn":"metformin","atc":"A10BA02","tags":["biguanide","with_food"],"syn":["metformina"]},
-    {"name":"Omeprazol","inn":"omeprazole","atc":"A02BC01","tags":["ppi"],"syn":["omeprazol"]},
-    {"name":"Alendronato","inn":"alendronate","atc":"M05BA04","tags":["bisphosphonate","empty_stomach"],"syn":["alendronato"]},
-    {"name":"Salbutamol","inn":"albuterol","atc":"R03AC02","tags":["saba"],"syn":["salbutamol","albuterol"]},
-    {"name":"Dextrometorfano","inn":"dextromethorphan","atc":"R05DA09","tags":["antitussive","serotonergic"],"syn":["dextrometorfano"]}
+    {
+      "name": "Alendronato",
+      "inn": "alendronate",
+      "atc": "M05BA04",
+      "tags": [
+        "bisphosphonate",
+        "empty_stomach"
+      ],
+      "syn": [
+        "alendronate",
+        "alendronato"
+      ]
+    },
+    {
+      "name": "Alprazolam",
+      "inn": "alprazolam",
+      "atc": "N05BA12",
+      "tags": [
+        "benzodiazepine",
+        "cyp3a4_substrate"
+      ],
+      "syn": [
+        "alprazolam"
+      ]
+    },
+    {
+      "name": "Amiodarona",
+      "inn": "amiodarone",
+      "atc": "C01BD01",
+      "tags": [
+        "antiarrhythmic",
+        "cyp3a4_inhibitor",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "amiodarona",
+        "amiodarone"
+      ]
+    },
+    {
+      "name": "Amitriptilina",
+      "inn": "amitriptyline",
+      "atc": "N06AA09",
+      "tags": [
+        "qt_prolonging",
+        "serotonergic",
+        "tca"
+      ],
+      "syn": [
+        "amitriptilina",
+        "amitriptyline"
+      ]
+    },
+    {
+      "name": "Amlodipino",
+      "inn": "amlodipine",
+      "atc": "C08CA01",
+      "tags": [
+        "antihypertensive",
+        "ccb_dhp",
+        "cyp3a4_substrate"
+      ],
+      "syn": [
+        "amlodipina",
+        "amlodipine",
+        "amlodipino"
+      ]
+    },
+    {
+      "name": "Amoxicilina",
+      "inn": "amoxicillin",
+      "atc": "J01CA04",
+      "tags": [
+        "penicillin"
+      ],
+      "syn": [
+        "amoxicilina",
+        "amoxicillin"
+      ]
+    },
+    {
+      "name": "Apixaban",
+      "inn": "apixaban",
+      "atc": "B01AF02",
+      "tags": [
+        "cyp3a4_substrate",
+        "doac"
+      ],
+      "syn": [
+        "apixaban"
+      ]
+    },
+    {
+      "name": "Atenolol",
+      "inn": "atenolol",
+      "atc": "C07AB03",
+      "tags": [
+        "betablocker"
+      ],
+      "syn": [
+        "atenolol"
+      ]
+    },
+    {
+      "name": "Atorvastatina",
+      "inn": "atorvastatin",
+      "atc": "C10AA05",
+      "tags": [
+        "cyp3a4_substrate",
+        "statin"
+      ],
+      "syn": [
+        "atorvastatin",
+        "atorvastatina",
+        "lipitor"
+      ]
+    },
+    {
+      "name": "Azitromicina",
+      "inn": "azithromycin",
+      "atc": "J01FA10",
+      "tags": [
+        "macrolide",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "azithromycin",
+        "azitromicina",
+        "zithromax"
+      ]
+    },
+    {
+      "name": "Captopril",
+      "inn": "captopril",
+      "atc": "C09AA01",
+      "tags": [
+        "acei",
+        "antihypertensive",
+        "empty_stomach",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "captopril"
+      ]
+    },
+    {
+      "name": "Ciprofloxacino",
+      "inn": "ciprofloxacin",
+      "atc": "J01MA02",
+      "tags": [
+        "chelation",
+        "qt_prolonging",
+        "quinolone"
+      ],
+      "syn": [
+        "cipro",
+        "ciprofloxacin",
+        "ciprofloxacino"
+      ]
+    },
+    {
+      "name": "Claritromicina",
+      "inn": "clarithromycin",
+      "atc": "J01FA09",
+      "tags": [
+        "cyp3a4_inhibitor",
+        "macrolide",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "clarithromycin",
+        "claritromicina"
+      ]
+    },
+    {
+      "name": "Clopidogrel",
+      "inn": "clopidogrel",
+      "atc": "B01AC04",
+      "tags": [
+        "antiplatelet",
+        "antiplatelet_p2y12"
+      ],
+      "syn": [
+        "clopidogrel"
+      ]
+    },
+    {
+      "name": "Codeina",
+      "inn": "codeine",
+      "atc": "N02AA59",
+      "tags": [
+        "opioid"
+      ],
+      "syn": [
+        "codeina",
+        "codeine"
+      ]
+    },
+    {
+      "name": "Dextrometorfano",
+      "inn": "dextromethorphan",
+      "atc": "R05DA09",
+      "tags": [
+        "antitussive",
+        "serotonergic"
+      ],
+      "syn": [
+        "dextromethorphan",
+        "dextrometorfano"
+      ]
+    },
+    {
+      "name": "Diazepam",
+      "inn": "diazepam",
+      "atc": "N05BA01",
+      "tags": [
+        "benzodiazepine"
+      ],
+      "syn": [
+        "diazepam"
+      ]
+    },
+    {
+      "name": "Diclofenaco",
+      "inn": "diclofenac",
+      "atc": "M01AB05",
+      "tags": [
+        "nsaid"
+      ],
+      "syn": [
+        "diclofenac",
+        "diclofenaco"
+      ]
+    },
+    {
+      "name": "Difenhidramina",
+      "inn": "diphenhydramine",
+      "atc": "R06AA02",
+      "tags": [
+        "antihistamine_sedating"
+      ],
+      "syn": [
+        "difenhidramina",
+        "diphenhydramine"
+      ]
+    },
+    {
+      "name": "Digoxina",
+      "inn": "digoxin",
+      "atc": "C01AA05",
+      "tags": [
+        "digoxin"
+      ],
+      "syn": [
+        "digoxin",
+        "digoxina"
+      ]
+    },
+    {
+      "name": "Diltiazem",
+      "inn": "diltiazem",
+      "atc": "C08DB01",
+      "tags": [
+        "ccb_nondhp",
+        "cyp3a4_inhibitor"
+      ],
+      "syn": [
+        "diltiazem"
+      ]
+    },
+    {
+      "name": "Doxiciclina",
+      "inn": "doxycycline",
+      "atc": "J01AA02",
+      "tags": [
+        "chelation",
+        "tetracycline"
+      ],
+      "syn": [
+        "doxiciclina",
+        "doxycycline"
+      ]
+    },
+    {
+      "name": "Enalapril",
+      "inn": "enalapril",
+      "atc": "C09AA02",
+      "tags": [
+        "acei",
+        "antihypertensive",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "enalapril"
+      ]
+    },
+    {
+      "name": "Eritromicina",
+      "inn": "erythromycin",
+      "atc": "J01FA01",
+      "tags": [
+        "cyp3a4_inhibitor",
+        "macrolide",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "eritromicina",
+        "erythromycin"
+      ]
+    },
+    {
+      "name": "Escitalopram",
+      "inn": "escitalopram",
+      "atc": "N06AB10",
+      "tags": [
+        "qt_prolonging",
+        "serotonergic",
+        "ssri"
+      ],
+      "syn": [
+        "escitalopram"
+      ]
+    },
+    {
+      "name": "Espironolactona",
+      "inn": "spironolactone",
+      "atc": "C03DA01",
+      "tags": [
+        "k_sparing"
+      ],
+      "syn": [
+        "espironolactona",
+        "spironolactone"
+      ]
+    },
+    {
+      "name": "Ezetimiba",
+      "inn": "ezetimibe",
+      "atc": "C10AX09",
+      "tags": [],
+      "syn": [
+        "ezetimiba",
+        "ezetimibe"
+      ]
+    },
+    {
+      "name": "Fluconazol",
+      "inn": "fluconazole",
+      "atc": "J02AC01",
+      "tags": [
+        "azole_antifungal",
+        "cyp3a4_inhibitor",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "fluconazol",
+        "fluconazole"
+      ]
+    },
+    {
+      "name": "Fluoxetina",
+      "inn": "fluoxetine",
+      "atc": "N06AB03",
+      "tags": [
+        "cyp3a4_inhibitor",
+        "serotonergic",
+        "ssri"
+      ],
+      "syn": [
+        "fluoxetina",
+        "fluoxetine",
+        "prozac"
+      ]
+    },
+    {
+      "name": "Furosemida",
+      "inn": "furosemide",
+      "atc": "C03CA01",
+      "tags": [
+        "loop_diuretic"
+      ],
+      "syn": [
+        "furosemida",
+        "furosemide"
+      ]
+    },
+    {
+      "name": "Gemfibrozilo",
+      "inn": "gemfibrozil",
+      "atc": "C10AB04",
+      "tags": [
+        "fibrate"
+      ],
+      "syn": [
+        "gemfibrozil",
+        "gemfibrozilo"
+      ]
+    },
+    {
+      "name": "Glibenclamida",
+      "inn": "glibenclamide",
+      "atc": "A10BB01",
+      "tags": [
+        "sulfonylurea"
+      ],
+      "syn": [
+        "glibenclamida",
+        "glibenclamide"
+      ]
+    },
+    {
+      "name": "Haloperidol",
+      "inn": "haloperidol",
+      "atc": "N05AD01",
+      "tags": [
+        "antipsychotic",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "haloperidol"
+      ]
+    },
+    {
+      "name": "Hidroclorotiazida",
+      "inn": "hydrochlorothiazide",
+      "atc": "C03AA03",
+      "tags": [
+        "antihypertensive",
+        "thiazide"
+      ],
+      "syn": [
+        "hctz",
+        "hidroclorotiazida",
+        "hydrochlorothiazide"
+      ]
+    },
+    {
+      "name": "Ibuprofeno",
+      "inn": "ibuprofen",
+      "atc": "M01AE01",
+      "tags": [
+        "nsaid"
+      ],
+      "syn": [
+        "ibuprofen",
+        "ibuprofeno"
+      ]
+    },
+    {
+      "name": "Isosorbida (mononitrato)",
+      "inn": "isosorbide mononitrate",
+      "atc": "C01DA14",
+      "tags": [
+        "nitrate"
+      ],
+      "syn": [
+        "isosorbida",
+        "isosorbida (mononitrato)",
+        "isosorbide mononitrate"
+      ]
+    },
+    {
+      "name": "Ketoconazol",
+      "inn": "ketoconazole",
+      "atc": "J02AB02",
+      "tags": [
+        "azole_antifungal",
+        "cyp3a4_inhibitor"
+      ],
+      "syn": [
+        "ketoconazol",
+        "ketoconazole"
+      ]
+    },
+    {
+      "name": "Levofloxacino",
+      "inn": "levofloxacin",
+      "atc": "J01MA12",
+      "tags": [
+        "chelation",
+        "qt_prolonging",
+        "quinolone"
+      ],
+      "syn": [
+        "levofloxacin",
+        "levofloxacino"
+      ]
+    },
+    {
+      "name": "Levotiroxina",
+      "inn": "levothyroxine",
+      "atc": "H03AA01",
+      "tags": [
+        "empty_stomach",
+        "levothyroxine"
+      ],
+      "syn": [
+        "eutirox",
+        "levothyroxine",
+        "levotiroxina"
+      ]
+    },
+    {
+      "name": "Lisinopril",
+      "inn": "lisinopril",
+      "atc": "C09AA03",
+      "tags": [
+        "acei",
+        "antihypertensive",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "lisinopril"
+      ]
+    },
+    {
+      "name": "Litio",
+      "inn": "lithium",
+      "atc": "N05AN01",
+      "tags": [
+        "lithium",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "lithium",
+        "litio"
+      ]
+    },
+    {
+      "name": "Loratadina",
+      "inn": "loratadine",
+      "atc": "R06AX13",
+      "tags": [
+        "antihistamine_nonsedating"
+      ],
+      "syn": [
+        "loratadina",
+        "loratadine"
+      ]
+    },
+    {
+      "name": "Losartan",
+      "inn": "losartan",
+      "atc": "C09CA01",
+      "tags": [
+        "antihypertensive",
+        "arb",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "losartan"
+      ]
+    },
+    {
+      "name": "Metformina",
+      "inn": "metformin",
+      "atc": "A10BA02",
+      "tags": [
+        "biguanide",
+        "with_food"
+      ],
+      "syn": [
+        "metformin",
+        "metformina"
+      ]
+    },
+    {
+      "name": "Metoprolol",
+      "inn": "metoprolol",
+      "atc": "C07AB02",
+      "tags": [
+        "betablocker"
+      ],
+      "syn": [
+        "metoprolol"
+      ]
+    },
+    {
+      "name": "Metotrexato",
+      "inn": "methotrexate",
+      "atc": "L01BA01",
+      "tags": [
+        "methotrexate",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "methotrexate",
+        "metotrexato"
+      ]
+    },
+    {
+      "name": "Morfina",
+      "inn": "morphine",
+      "atc": "N02AA01",
+      "tags": [
+        "opioid"
+      ],
+      "syn": [
+        "morfina",
+        "morphine"
+      ]
+    },
+    {
+      "name": "Naproxeno",
+      "inn": "naproxen",
+      "atc": "M01AE02",
+      "tags": [
+        "nsaid"
+      ],
+      "syn": [
+        "naproxen",
+        "naproxeno"
+      ]
+    },
+    {
+      "name": "Omeprazol",
+      "inn": "omeprazole",
+      "atc": "A02BC01",
+      "tags": [
+        "ppi"
+      ],
+      "syn": [
+        "omeprazol",
+        "omeprazole"
+      ]
+    },
+    {
+      "name": "Ondansetron",
+      "inn": "ondansetron",
+      "atc": "A04AA01",
+      "tags": [
+        "qt_prolonging",
+        "serotonergic"
+      ],
+      "syn": [
+        "ondansetron"
+      ]
+    },
+    {
+      "name": "Pantoprazol",
+      "inn": "pantoprazole",
+      "atc": "A02BC02",
+      "tags": [
+        "ppi"
+      ],
+      "syn": [
+        "pantoprazol",
+        "pantoprazole"
+      ]
+    },
+    {
+      "name": "Paracetamol",
+      "inn": "acetaminophen",
+      "atc": "N02BE01",
+      "tags": [
+        "analgesic"
+      ],
+      "syn": [
+        "acetaminofen",
+        "acetaminophen",
+        "paracetamol"
+      ]
+    },
+    {
+      "name": "Prednisona",
+      "inn": "prednisone",
+      "atc": "H02AB07",
+      "tags": [
+        "corticosteroid_oral"
+      ],
+      "syn": [
+        "prednisona",
+        "prednisone"
+      ]
+    },
+    {
+      "name": "Quetiapina",
+      "inn": "quetiapine",
+      "atc": "N05AH04",
+      "tags": [
+        "antipsychotic",
+        "cyp3a4_substrate",
+        "qt_prolonging"
+      ],
+      "syn": [
+        "quetiapina",
+        "quetiapine"
+      ]
+    },
+    {
+      "name": "Rosuvastatina",
+      "inn": "rosuvastatin",
+      "atc": "C10AA07",
+      "tags": [
+        "statin"
+      ],
+      "syn": [
+        "crestor",
+        "rosuvastatin",
+        "rosuvastatina"
+      ]
+    },
+    {
+      "name": "Salbutamol",
+      "inn": "albuterol",
+      "atc": "R03AC02",
+      "tags": [
+        "saba"
+      ],
+      "syn": [
+        "albuterol",
+        "salbutamol"
+      ]
+    },
+    {
+      "name": "Sertralina",
+      "inn": "sertraline",
+      "atc": "N06AB06",
+      "tags": [
+        "serotonergic",
+        "ssri"
+      ],
+      "syn": [
+        "sertralina",
+        "sertraline",
+        "zoloft"
+      ]
+    },
+    {
+      "name": "Sildenafilo",
+      "inn": "sildenafil",
+      "atc": "G04BE03",
+      "tags": [
+        "cyp3a4_substrate",
+        "pde5"
+      ],
+      "syn": [
+        "sildenafil",
+        "sildenafilo",
+        "viagra"
+      ]
+    },
+    {
+      "name": "Simvastatina",
+      "inn": "simvastatin",
+      "atc": "C10AA01",
+      "tags": [
+        "cyp3a4_substrate",
+        "statin"
+      ],
+      "syn": [
+        "simvastatin",
+        "simvastatina"
+      ]
+    },
+    {
+      "name": "Tramadol",
+      "inn": "tramadol",
+      "atc": "N02AX02",
+      "tags": [
+        "opioid",
+        "serotonergic"
+      ],
+      "syn": [
+        "tramadol"
+      ]
+    },
+    {
+      "name": "Valsartan",
+      "inn": "valsartan",
+      "atc": "C09CA03",
+      "tags": [
+        "antihypertensive",
+        "arb",
+        "pregnancy_risk"
+      ],
+      "syn": [
+        "valsartan"
+      ]
+    },
+    {
+      "name": "Venlafaxina",
+      "inn": "venlafaxine",
+      "atc": "N06AX16",
+      "tags": [
+        "serotonergic",
+        "snri"
+      ],
+      "syn": [
+        "venlafaxina",
+        "venlafaxine"
+      ]
+    },
+    {
+      "name": "Verapamilo",
+      "inn": "verapamil",
+      "atc": "C08DA01",
+      "tags": [
+        "ccb_nondhp",
+        "cyp3a4_inhibitor"
+      ],
+      "syn": [
+        "verapamil",
+        "verapamilo"
+      ]
+    },
+    {
+      "name": "Warfarina",
+      "inn": "warfarin",
+      "atc": "B01AA03",
+      "tags": [
+        "anticoagulant",
+        "pregnancy_risk",
+        "vit_k"
+      ],
+      "syn": [
+        "coumadin",
+        "warfarin",
+        "warfarina"
+      ]
+    }
   ]
 }

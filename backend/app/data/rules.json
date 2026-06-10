@@ -1,100 +1,57 @@
 {
-  "version": "2026.06.10",
+  "version": "2026.06.10b",
   "maintainers": ["Anthony", "Jaibely Froilan"],
-  "note": "Curaduria propia (IP). Reglas por pares de ETIQUETAS de clase. Un par dispara si un farmaco tiene >=1 de a_tags y el otro >=1 de b_tags (en cualquier orden). Severidad: red|amber. 'cite' debe apuntar a literatura primaria o guia. NO usar datos de fuentes con licencia no comercial (CredibleMeds, DrugBank no comercial).",
+  "note": "Curaduria propia (IP). Interacciones por pares de ETIQUETAS de clase, de alto rendimiento en mostrador. Todas son efectos de clase establecidos en la literatura. Severidad red|amber. NO se usan datos de fuentes no comerciales (CredibleMeds, DrugBank no comercial); la lista qt_prolonging es ilustrativa y su fuente autoritativa (CredibleMeds) requiere licencia.",
   "rules": [
-    {
-      "id": "statin-cyp3a4",
-      "severity": "red",
-      "a_tags": ["statin"],
-      "b_tags": ["cyp3a4_inhibitor"],
-      "exclude_if_statin": ["rosuvastatin", "pravastatin"],
-      "mechanism": "Inhibicion de CYP3A4 -> aumento de la concentracion de la estatina -> riesgo de miopatia/rabdomiolisis.",
-      "conduct": "Suspender la estatina durante el tratamiento o cambiar a una no metabolizada por CYP3A4 (rosuvastatina/pravastatina). Contactar al prescriptor.",
-      "cite": "Principio farmacocinetico (CYP3A4). Verificar ficha tecnica de la estatina."
-    },
-    {
-      "id": "raas-nsaid",
-      "severity": "amber",
-      "a_tags": ["acei", "arb"],
-      "b_tags": ["nsaid"],
-      "mechanism": "El AINE reduce el efecto antihipertensivo y, junto a IECA/ARA-II, aumenta el riesgo de dano renal e hiperkalemia.",
-      "conduct": "Limitar o evitar el AINE; preferir paracetamol. Vigilar TA, funcion renal y potasio.",
-      "cite": "Interaccion farmacodinamica renal (triple whammy si se suma diuretico)."
-    },
-    {
-      "id": "raas-ksparing",
-      "severity": "amber",
-      "a_tags": ["acei", "arb"],
-      "b_tags": ["k_sparing"],
-      "mechanism": "Suma de retencion de potasio -> hiperkalemia.",
-      "conduct": "Monitorizar potasio serico y funcion renal.",
-      "cite": "Farmacodinamia (K+)."
-    },
-    {
-      "id": "anticoag-nsaid",
-      "severity": "red",
-      "a_tags": ["anticoagulant"],
-      "b_tags": ["nsaid"],
-      "mechanism": "Aumento del riesgo hemorragico: gastrolesion por AINE sumada a la anticoagulacion.",
-      "conduct": "Evitar el AINE; para dolor usar paracetamol. Si es imprescindible: gastroproteccion y vigilar sangrado/INR.",
-      "cite": "Riesgo hemorragico aditivo."
-    },
-    {
-      "id": "sero-sero",
-      "severity": "amber",
-      "a_tags": ["serotonergic"],
-      "b_tags": ["serotonergic"],
-      "mechanism": "Suma de actividad serotoninergica -> riesgo de sindrome serotoninergico.",
-      "conduct": "Vigilar agitacion, clonus, hipertermia, taquicardia. Educar sobre signos de alarma.",
-      "cite": "Farmacodinamia (serotonina)."
-    },
-    {
-      "id": "nitrate-pde5",
-      "severity": "red",
-      "a_tags": ["nitrate"],
-      "b_tags": ["pde5"],
-      "mechanism": "Vasodilatacion sinergica via GMPc -> hipotension severa.",
-      "conduct": "Combinacion contraindicada. No dispensar juntos. Derivar al medico.",
-      "cite": "Farmacodinamia (NO/GMPc)."
-    },
-    {
-      "id": "digoxin-ccb",
-      "severity": "amber",
-      "a_tags": ["digoxin"],
-      "b_tags": ["ccb_nondhp"],
-      "mechanism": "Aumento de niveles de digoxina (inhibicion de gp-P) y suma de efecto cronotropico negativo.",
-      "conduct": "Monitorizar digoxinemia y frecuencia cardiaca; vigilar toxicidad digitalica.",
-      "cite": "Farmacocinetica (gp-P)."
-    },
-    {
-      "id": "thiazide-digoxin",
-      "severity": "amber",
-      "a_tags": ["thiazide"],
-      "b_tags": ["digoxin"],
-      "mechanism": "La hipokalemia por tiazida potencia la toxicidad por digoxina.",
-      "conduct": "Vigilar potasio; reponer si procede.",
-      "cite": "Farmacodinamia (electrolitos)."
-    },
-    {
-      "id": "levo-absorption",
-      "severity": "amber",
-      "a_tags": ["levothyroxine"],
-      "b_tags": ["ppi", "chelation"],
-      "mechanism": "Disminucion de la absorcion de levotiroxina (cambios de pH / quelacion).",
-      "conduct": "Separar tomas >=4 h; vigilar TSH; mantener marca/lote constante.",
-      "cite": "Farmacocinetica (absorcion)."
-    }
+    {"id":"statin-cyp3a4","severity":"red","a_tags":["statin"],"b_tags":["cyp3a4_inhibitor"],"exclude_if_statin":["rosuvastatin","pravastatin","fluvastatin"],"mechanism":"Inhibicion de CYP3A4 -> aumento de la concentracion de la estatina -> riesgo de miopatia/rabdomiolisis.","conduct":"Suspender la estatina durante el tratamiento o cambiar a una no CYP3A4 (rosuvastatina/pravastatina). Contactar al prescriptor.","cite":"Farmacocinetica (CYP3A4)."},
+    {"id":"statin-fibrate","severity":"amber","a_tags":["statin"],"b_tags":["fibrate"],"mechanism":"Suma de riesgo de miopatia/rabdomiolisis (mayor con gemfibrozilo).","conduct":"Preferir fenofibrato sobre gemfibrozilo si se combina. Vigilar dolor muscular y CK. Educar sobre signos de alarma.","cite":"Farmacodinamia muscular."},
+    {"id":"raas-nsaid","severity":"amber","a_tags":["acei","arb"],"b_tags":["nsaid"],"mechanism":"El AINE reduce el efecto antihipertensivo y, con IECA/ARA-II, aumenta el riesgo de dano renal e hiperkalemia.","conduct":"Limitar/evitar el AINE; preferir paracetamol. Vigilar TA, funcion renal y potasio (triple whammy si se suma diuretico).","cite":"Farmacodinamia renal."},
+    {"id":"dual-raas","severity":"red","a_tags":["acei"],"b_tags":["arb"],"mechanism":"Doble bloqueo del eje renina-angiotensina -> hiperkalemia, hipotension y dano renal.","conduct":"No combinar IECA con ARA-II salvo indicacion especialista. Derivar al prescriptor.","cite":"Farmacodinamia (SRAA)."},
+    {"id":"raas-ksparing","severity":"amber","a_tags":["acei","arb"],"b_tags":["k_sparing"],"mechanism":"Suma de retencion de potasio -> hiperkalemia.","conduct":"Monitorizar potasio serico y funcion renal.","cite":"Farmacodinamia (K+)."},
+    {"id":"ksparing-dup","severity":"amber","a_tags":["k_sparing"],"b_tags":["k_sparing"],"mechanism":"Dos ahorradores de potasio -> hiperkalemia.","conduct":"Revisar duplicidad; vigilar potasio.","cite":"Duplicidad / K+."},
+    {"id":"anticoag-nsaid","severity":"red","a_tags":["anticoagulant","doac"],"b_tags":["nsaid"],"mechanism":"Aumento del riesgo hemorragico: gastrolesion por AINE sumada a la anticoagulacion.","conduct":"Evitar el AINE; para dolor usar paracetamol. Si imprescindible: gastroproteccion y vigilar sangrado/INR.","cite":"Riesgo hemorragico aditivo."},
+    {"id":"anticoag-cyp3a4","severity":"amber","a_tags":["anticoagulant"],"b_tags":["cyp3a4_inhibitor"],"mechanism":"Inhibidores enzimaticos (azoles, macrolidos) elevan el INR de la warfarina -> sangrado.","conduct":"Controlar INR mas seguido al iniciar/suspender el antibiotico/azol; ajustar dosis con el prescriptor.","cite":"Farmacocinetica (CYP)."},
+    {"id":"anticoag-antiplatelet","severity":"red","a_tags":["anticoagulant","doac"],"b_tags":["antiplatelet","antiplatelet_p2y12"],"mechanism":"Anticoagulante + antiagregante -> riesgo hemorragico marcado.","conduct":"Solo bajo indicacion medica con gastroproteccion. Verificar que sea intencional.","cite":"Hemostasia."},
+    {"id":"ssri-anticoag","severity":"amber","a_tags":["ssri","snri"],"b_tags":["anticoagulant","doac"],"mechanism":"Los ISRS/IRSN afectan la agregacion plaquetaria -> suma de riesgo de sangrado.","conduct":"Vigilar signos de sangrado; valorar gastroproteccion.","cite":"Farmacodinamia plaquetaria."},
+    {"id":"ssri-nsaid","severity":"amber","a_tags":["ssri","snri"],"b_tags":["nsaid"],"mechanism":"Suma de riesgo de sangrado digestivo.","conduct":"Preferir paracetamol; si AINE, valorar gastroproteccion.","cite":"Riesgo GI."},
+    {"id":"sero-sero","severity":"amber","a_tags":["serotonergic"],"b_tags":["serotonergic"],"mechanism":"Suma de actividad serotoninergica -> riesgo de sindrome serotoninergico.","conduct":"Vigilar agitacion, clonus, hipertermia, taquicardia. Educar sobre signos de alarma.","cite":"Farmacodinamia (serotonina)."},
+    {"id":"maoi-sero","severity":"red","a_tags":["maoi"],"b_tags":["serotonergic"],"mechanism":"IMAO + serotoninergico -> sindrome serotoninergico potencialmente fatal.","conduct":"Combinacion contraindicada. Requiere periodos de lavado. Derivar al medico.","cite":"Farmacodinamia (serotonina)."},
+    {"id":"nitrate-pde5","severity":"red","a_tags":["nitrate"],"b_tags":["pde5"],"mechanism":"Vasodilatacion sinergica via GMPc -> hipotension severa.","conduct":"Combinacion contraindicada. No dispensar juntos. Derivar al medico.","cite":"Farmacodinamia (NO/GMPc)."},
+    {"id":"qt-additive","severity":"amber","a_tags":["qt_prolonging"],"b_tags":["qt_prolonging"],"mechanism":"Suma de prolongacion del QT -> riesgo de Torsades de Pointes.","conduct":"Evitar la combinacion si hay alternativas; mas riesgo con hipokalemia/cardiopatia. Valorar ECG.","cite":"Electrofisiologia (QT). Fuente autoritativa: CredibleMeds (licenciada)."},
+    {"id":"opioid-benzo","severity":"red","a_tags":["opioid"],"b_tags":["benzodiazepine","z_drug"],"mechanism":"Depresion del SNC y respiratoria aditiva -> riesgo de sedacion profunda y paro respiratorio.","conduct":"Evitar la combinacion. Si es inevitable, minima dosis y educar a la familia sobre signos de sobredosis.","cite":"Depresion SNC aditiva (advertencia de recuadro FDA)."},
+    {"id":"digoxin-ccb","severity":"amber","a_tags":["digoxin"],"b_tags":["ccb_nondhp"],"mechanism":"Aumento de niveles de digoxina (gp-P) y suma de efecto cronotropico negativo.","conduct":"Monitorizar digoxinemia y frecuencia cardiaca; vigilar toxicidad digitalica.","cite":"Farmacocinetica (gp-P)."},
+    {"id":"digoxin-amiodarone","severity":"amber","a_tags":["digoxin"],"b_tags":["antiarrhythmic"],"mechanism":"La amiodarona eleva los niveles de digoxina.","conduct":"Reducir dosis de digoxina y monitorizar niveles.","cite":"Farmacocinetica."},
+    {"id":"thiazide-digoxin","severity":"amber","a_tags":["thiazide","loop_diuretic"],"b_tags":["digoxin"],"mechanism":"La hipokalemia por diuretico potencia la toxicidad por digoxina.","conduct":"Vigilar potasio; reponer si procede.","cite":"Farmacodinamia (electrolitos)."},
+    {"id":"lithium-nsaid","severity":"amber","a_tags":["lithium"],"b_tags":["nsaid"],"mechanism":"Los AINE reducen la eliminacion renal del litio -> toxicidad por litio.","conduct":"Evitar AINE; preferir paracetamol. Vigilar litemia y signos de toxicidad.","cite":"Farmacocinetica renal."},
+    {"id":"lithium-thiazide","severity":"amber","a_tags":["lithium"],"b_tags":["thiazide"],"mechanism":"Las tiazidas aumentan la reabsorcion de litio -> toxicidad.","conduct":"Vigilar litemia; ajustar dosis con el prescriptor.","cite":"Farmacocinetica renal."},
+    {"id":"mtx-nsaid","severity":"red","a_tags":["methotrexate"],"b_tags":["nsaid"],"mechanism":"Los AINE reducen la excrecion de metotrexato -> toxicidad (mielo/nefro), sobre todo a dosis altas.","conduct":"Evitar AINE con metotrexato. Para dolor usar paracetamol. Consultar al prescriptor.","cite":"Farmacocinetica renal."},
+    {"id":"clopidogrel-ppi","severity":"amber","a_tags":["antiplatelet_p2y12"],"b_tags":["ppi"],"mechanism":"Omeprazol/esomeprazol inhiben CYP2C19 y reducen la activacion de clopidogrel -> menor efecto antiagregante.","conduct":"Preferir pantoprazol si se necesita IBP. Consultar al prescriptor.","cite":"Farmacocinetica (CYP2C19)."},
+    {"id":"betablocker-nondhp","severity":"amber","a_tags":["betablocker"],"b_tags":["ccb_nondhp"],"mechanism":"Suma de efecto cronotropico/inotropico negativo -> bradicardia, bloqueo AV, hipotension.","conduct":"Vigilar frecuencia cardiaca y TA; precaucion en insuficiencia cardiaca.","cite":"Farmacodinamia cardiaca."},
+    {"id":"nsaid-dup","severity":"amber","a_tags":["nsaid"],"b_tags":["nsaid"],"mechanism":"Dos AINE -> mayor riesgo GI y renal sin beneficio adicional.","conduct":"Duplicidad: dejar un solo AINE.","cite":"Duplicidad terapeutica."},
+    {"id":"ssri-dup","severity":"amber","a_tags":["ssri"],"b_tags":["ssri"],"mechanism":"Dos ISRS -> riesgo serotoninergico sin beneficio.","conduct":"Duplicidad: revisar con el prescriptor.","cite":"Duplicidad terapeutica."},
+    {"id":"ppi-dup","severity":"amber","a_tags":["ppi"],"b_tags":["ppi"],"mechanism":"Dos inhibidores de bomba -> duplicidad.","conduct":"Dejar uno solo.","cite":"Duplicidad terapeutica."},
+    {"id":"benzo-dup","severity":"amber","a_tags":["benzodiazepine"],"b_tags":["benzodiazepine"],"mechanism":"Dos benzodiacepinas -> sedacion aditiva.","conduct":"Revisar duplicidad; riesgo de caidas/sedacion.","cite":"Duplicidad / SNC."},
+    {"id":"levo-absorption","severity":"amber","a_tags":["levothyroxine"],"b_tags":["ppi","chelation","bisphosphonate"],"mechanism":"Disminucion de la absorcion de levotiroxina (pH/quelacion).","conduct":"Separar tomas >=4 h; vigilar TSH; mantener marca/lote constante.","cite":"Farmacocinetica (absorcion)."}
   ],
   "food_rules": [
     {"tag":"cyp3a4_substrate","text":"Evitar jugo de toronja/pomelo: inhibe CYP3A4 intestinal y aumenta la exposicion del farmaco."},
     {"tag":"statin","text":"Atorvastatina/simvastatina: evitar toronja/pomelo (CYP3A4)."},
     {"tag":"levothyroxine","text":"Tomar en ayunas, 30-60 min antes del desayuno. Separar >=4 h de calcio, hierro, antiacidos y cafe."},
     {"tag":"chelation","text":"Quinolonas/tetraciclinas: separar >=2 h de lacteos, antiacidos, calcio o hierro (quelacion -> menor absorcion)."},
-    {"tag":"bisphosphonate","text":"Alendronato: en ayunas con agua; permanecer erguido >=30 min. Nada de alimentos ni otras bebidas."},
+    {"tag":"bisphosphonate","text":"En ayunas con agua; permanecer erguido >=30 min. Nada de alimentos ni otras bebidas."},
     {"tag":"with_food","text":"Metformina: con o despues de las comidas para reducir molestias GI."},
-    {"tag":"empty_stomach","text":"Captopril: estomago vacio (1 h antes de comer) para no reducir su absorcion."},
+    {"tag":"empty_stomach","text":"Tomar con el estomago vacio (1 h antes de comer) para no reducir la absorcion."},
     {"tag":"anticoagulant","text":"Warfarina: ingesta CONSISTENTE de vitamina K (verduras de hoja verde). No es prohibicion: es constancia."},
-    {"tag":"nsaid","text":"AINE: tomar con alimentos para reducir la irritacion gastrica."}
-  ]
+    {"tag":"nsaid","text":"AINE: tomar con alimentos para reducir la irritacion gastrica."},
+    {"tag":"maoi","text":"IMAO: evitar alimentos ricos en tiramina (quesos curados, embutidos, vino) -> crisis hipertensiva."},
+    {"tag":"sulfonylurea","text":"Sulfonilureas: tomar con la comida y vigilar hipoglucemia; evitar el alcohol."},
+    {"tag":"betablocker","text":"Betabloqueantes: no suspender de golpe (efecto rebote)."}
+  ],
+  "patient_flags": {
+    "pregnancy": {
+      "tags": ["acei", "arb", "statin"],
+      "inns": ["warfarin", "methotrexate", "isotretinoin", "valproic acid", "valproate", "lithium"],
+      "text": "Clase con riesgo conocido en el embarazo: evitar o requiere valoracion medica."
+    }
+  }
 }
