@@ -1,0 +1,37 @@
+name: Enriquecer catalogo de farmacos
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar el repo
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerar el catalogo desde RxClass (NLM)
+        run: python backend/scripts/enrich.py
+
+      - name: Commitear si hubo cambios
+        run: |
+          git config user.name "cdss-bot"
+          git config user.email "bot@users.noreply.github.com"
+          if ! git diff --quiet -- backend/app/data/drugs.json; then
+            git add backend/app/data/drugs.json
+            git commit -m "auto: catalogo actualizado ($(date +%Y-%m-%d))"
+            git push
+            echo "Catalogo actualizado y subido."
+          else
+            echo "Sin cambios en el catalogo."
+          fi
