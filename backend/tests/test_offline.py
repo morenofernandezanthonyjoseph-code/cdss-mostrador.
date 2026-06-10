@@ -1,0 +1,73 @@
+"""Tests que NO requieren red. Cubren la logica propia: fonetica, reglas, recomendacion.
+Los proxies a fuentes externas se prueban aparte (requieren conectividad)."""
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+
+def test_health():
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"
+
+
+def test_phonetic_search_balbuceo():
+    # "asitromisina" debe resolver a Azitromicina con alta coincidencia
+    r = client.get("/api/drugs/search", params={"q": "asitromisina"})
+    assert r.status_code == 200
+    results = r.json()["results"]
+    assert results, "deberia haber resultados"
+    top = results[0]
+    assert top["name"] == "Azitromicina"
+    assert top["score"] >= 80
+
+
+def test_phonetic_search_typo():
+    r = client.get("/api/drugs/search", params={"q": "warfarina"})
+    assert r.json()["results"][0]["name"] == "Warfarina"
+
+
+def test_interaction_red_statin_cyp3a4():
+    cart = {"cart": [
+        {"name": "Simvastatina", "inn": "simvastatin", "atc": "C10AA01", "tags": ["statin", "cyp3a4_substrate"]},
+        {"name": "Claritromicina", "inn": "clarithromycin", "atc": "J01FA09", "tags": ["macrolide", "cyp3a4_inhibitor"]},
+    ]}
+    r = client.post("/api/interactions", json=cart)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["verdict"] == "red"
+    assert any(a["id"] == "statin-cyp3a4" for a in body["alerts"])
+
+
+def test_interaction_exclusion_rosuvastatin():
+    # Rosuvastatina NO se metaboliza por CYP3A4 -> no debe disparar la regla roja
+    cart = {"cart": [
+        {"name": "Rosuvastatina", "inn": "rosuvastatin", "atc": "C10AA07", "tags": ["statin"]},
+        {"name": "Claritromicina", "inn": "clarithromycin", "atc": "J01FA09", "tags": ["macrolide", "cyp3a4_inhibitor"]},
+    ]}
+    r = client.post("/api/interactions", json=cart)
+    assert not any(a["id"] == "statin-cyp3a4" for a in r.json()["alerts"])
+
+
+def test_food_alert_warfarin():
+    cart = {"cart": [{"name": "Warfarina", "inn": "warfarin", "atc": "B01AA03", "tags": ["anticoagulant", "vit_k"]}]}
+    r = client.post("/api/interactions", json=cart)
+    assert any("vitamina K" in f["text"] for f in r.json()["food_alerts"])
+
+
+def test_recommend_hta():
+    r = client.get("/api/recommend", params={"q": "hipertension"})
+    assert r.json()["match"]["title"] == "Hipertension arterial"
+
+
+def test_recommend_no_invent():
+    r = client.get("/api/recommend", params={"q": "xyzqw"})
+    assert r.json()["match"] is None
+
+
+def test_rules_versioned():
+    r = client.get("/api/rules")
+    body = r.json()
+    assert "version" in body
+    assert len(body["rules"]) >= 9

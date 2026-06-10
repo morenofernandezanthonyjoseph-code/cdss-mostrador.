@@ -1,0 +1,58 @@
+{
+  "version": "2026.06.10",
+  "note": "Lineas de tratamiento atadas a guia citada. SIN porcentajes de eficacia inventados. 'guideline' debe nombrar la guia y su ano vigente al curar.",
+  "indications": [
+    {
+      "keys": ["hipertension", "hta", "presion alta", "tension alta"],
+      "title": "Hipertension arterial",
+      "guideline": "Guias ESC/ESH (verificar ano vigente).",
+      "lines": [
+        {"line": "1.a linea", "options": [
+          {"drug": "IECA / ARA-II (enalapril, losartan)", "note": "Especialmente con diabetes o proteinuria.", "warn": "Contraindicados en embarazo. Vigilar K+ y funcion renal."},
+          {"drug": "Calcioantagonista DHP (amlodipino)", "note": "Buena opcion en mayores.", "warn": "Vigilar edema maleolar."},
+          {"drug": "Tiazidico (hidroclorotiazida)", "note": "Util en combinacion.", "warn": "Precaucion en gota e hipokalemia."}
+        ]},
+        {"line": "Combinacion", "options": [
+          {"drug": "IECA/ARA-II + calcioantagonista o tiazida", "note": "De inicio si TA muy elevada.", "warn": "No combinar IECA + ARA-II."}
+        ]}
+      ]
+    },
+    {
+      "keys": ["asma"],
+      "title": "Asma",
+      "guideline": "Estrategia GINA (verificar ano vigente).",
+      "lines": [
+        {"line": "Controlador", "options": [{"drug": "Corticoide inhalado + formoterol", "note": "GINA prioriza CI-formoterol como base y rescate.", "warn": "No usar SABA en monoterapia como unico tratamiento."}]},
+        {"line": "Rescate", "options": [{"drug": "SABA (salbutamol) o CI-formoterol", "note": "Para sintomas agudos.", "warn": "Uso frecuente de SABA = mal control: reevaluar."}]},
+        {"line": "Evitar", "options": [{"drug": "Betabloqueantes no selectivos", "note": "-", "warn": "Pueden desencadenar broncoespasmo."}]}
+      ]
+    },
+    {
+      "keys": ["diabetes", "dm2", "azucar alta"],
+      "title": "Diabetes tipo 2",
+      "guideline": "ADA Standards of Care (verificar ano vigente).",
+      "lines": [
+        {"line": "Base", "options": [{"drug": "Metformina", "note": "Salvo contraindicacion; con alimentos.", "warn": "Precaucion en TFG baja."}]},
+        {"line": "Segun comorbilidad", "options": [{"drug": "iSGLT2 / arGLP-1", "note": "Preferidos con enfermedad CV, IC o renal.", "warn": "Requieren prescripcion y seguimiento."}]}
+      ]
+    },
+    {
+      "keys": ["tos seca", "tos"],
+      "title": "Tos seca",
+      "guideline": "Manejo sintomatico - sin lineas rigidas.",
+      "lines": [
+        {"line": "Antes de medicar", "options": [{"drug": "Descartar causa", "note": "La tos seca persistente puede ser efecto del IECA.", "warn": "Si toma IECA: derivar para evaluar cambio a ARA-II, no encadenar antitusivos."}]},
+        {"line": "Sintomatico", "options": [{"drug": "Dextrometorfano", "note": "Antitusivo central para tos no productiva.", "warn": "Riesgo serotoninergico con ISRS/IMAO. No en tos productiva."}]}
+      ]
+    },
+    {
+      "keys": ["dolor", "analgesia"],
+      "title": "Dolor leve-moderado",
+      "guideline": "Escalera analgesica / criterios de seguridad.",
+      "lines": [
+        {"line": "1.a eleccion", "options": [{"drug": "Paracetamol", "note": "Mejor perfil GI/renal/CV.", "warn": "Vigilar dosis maxima; precaucion en hepatopatia."}]},
+        {"line": "2.a eleccion", "options": [{"drug": "AINE (ibuprofeno)", "note": "Si componente inflamatorio.", "warn": "Precaucion GI, renal, CV y con anticoagulantes."}]}
+      ]
+    }
+  ]
+}
