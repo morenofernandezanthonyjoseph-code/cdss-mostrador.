@@ -7,15 +7,17 @@ import { api } from "./api";
    inventa ni hardcodea datos clinicos. */
 
 const C = {
-  bg: "#FBFCFD", surface: "#FFFFFF", ink: "#0B1220", sub: "#56606E", line: "#DCE2E9",
-  soft: "#F2F5F8", focus: "#1D4ED8", red: "#C8102E", redBg: "#FBE9EC", redLine: "#E7A9B2",
-  amber: "#B45309", amberBg: "#FBF1E3", amberLine: "#E6C997", green: "#1B7A43",
-  greenBg: "#E8F4EC", greenLine: "#A9D3B9", fda: "#0A4D8C", fdaBg: "#E7F0F8",
+  bg: "#E9EEF3", surface: "#FFFFFF", soft: "#F4F7FA", ink: "#0E1A2B", sub: "#5C6878",
+  line: "#D6DEE7", brand: "#0B6E75", brandSoft: "#E0F0F0", focus: "#0B6E75",
+  red: "#C8102E", redBg: "#FCE9EC", redLine: "#F0B8C0",
+  amber: "#B45309", amberBg: "#FBF0E0", amberLine: "#E6CB95",
+  green: "#15803D", greenBg: "#E6F4EA", greenLine: "#A7D7B5",
+  fda: "#0A4D8C", fdaBg: "#E7F0F8",
 };
 const SEV = {
-  red: { color: C.red, bg: C.redBg, line: C.redLine, label: "CONTRAINDICADO" },
-  amber: { color: C.amber, bg: C.amberBg, line: C.amberLine, label: "PRECAUCION" },
-  green: { color: C.green, bg: C.greenBg, line: C.greenLine, label: "SIN ALERTAS CURADAS" },
+  red: { color: C.red, bg: C.redBg, line: C.redLine, label: "REVISAR", hero: "Revisar antes de dispensar", dot: C.red },
+  amber: { color: C.amber, bg: C.amberBg, line: C.amberLine, label: "PRECAUCION", hero: "Precaucion", dot: C.amber },
+  green: { color: C.green, bg: C.greenBg, line: C.greenLine, label: "SIN ALERTAS", hero: "Sin alertas curadas", dot: C.green },
 };
 
 export default function App() {
@@ -30,6 +32,7 @@ export default function App() {
   const [recommendation, setRecommendation] = useState(null);
   const [health, setHealth] = useState(null);
   const [attributions, setAttributions] = useState([]);
+  const [tab, setTab] = useState("recipe");
   const searchRef = useRef(null);
 
   useEffect(() => { api.health().then(setHealth).catch(() => setHealth(null)); }, []);
@@ -79,8 +82,14 @@ export default function App() {
 
   useEffect(() => {
     const onKey = (e) => {
+      const typing = ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName);
       if (e.key === "/" && document.activeElement !== searchRef.current) { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === "Escape" && detailAtc) setDetailAtc(null);
+      if (!typing && !detailAtc) {
+        if (e.key === "1") setTab("recipe");
+        if (e.key === "2") setTab("alertas");
+        if (e.key === "3") setTab("consultas");
+      }
     };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, [detailAtc]);
@@ -97,111 +106,162 @@ export default function App() {
   const detail = cart.find((c) => c.atc === detailAtc);
 
   return (
-    <div style={{ background: C.bg, color: C.ink, minHeight: "100vh", fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
+    <div style={{ background: C.bg, color: C.ink, minHeight: "100vh", fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif" }}>
       <style>{`
         @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
-        .cf:focus-visible{outline:2px solid ${C.focus};outline-offset:2px;border-radius:6px}
-        button:focus-visible{outline:2px solid ${C.focus};outline-offset:2px}
-        kbd{background:#EEF1F5;border:1px solid #D5DBE2;border-radius:4px;padding:1px 5px;font-size:10px}
+        *{box-sizing:border-box}
+        .cf:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{outline:3px solid ${C.focus};outline-offset:2px;border-radius:8px}
+        kbd{background:#fff;border:1px solid ${C.line};border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:11px;color:${C.sub};font-family:ui-monospace,monospace}
+        .touch{min-height:52px}
+        .card{background:${C.surface};border:1px solid ${C.line};border-radius:16px;box-shadow:0 1px 2px rgba(14,26,43,0.04)}
+        .eyebrow{font-size:11px;letter-spacing:.12em;color:${C.brand};text-transform:uppercase;font-weight:700;font-family:ui-monospace,monospace}
+        .h2{font-size:17px;font-weight:750;letter-spacing:-.01em}
+        .grid3{display:grid;grid-template-columns:1fr;gap:16px;padding:16px;padding-bottom:96px}
+        .col{display:flex;flex-direction:column;gap:16px}
+        .col{display:none}
+        .col.active{display:flex}
+        .tabbar{position:fixed;bottom:0;left:0;right:0;z-index:40;display:flex;background:${C.surface};border-top:1px solid ${C.line};box-shadow:0 -2px 12px rgba(14,26,43,0.06)}
+        .tabbtn{flex:1;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:${C.sub};font-size:12px;font-weight:600;cursor:pointer}
+        .tabbtn[data-active="true"]{color:${C.brand}}
+        .tabbtn[data-active="true"] .tabdot{background:${C.brand}}
+        .tabdot{width:22px;height:3px;border-radius:2px;background:transparent}
+        .tabnum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;background:${C.soft};font-family:ui-monospace,monospace;font-size:12px;font-weight:700}
+        @media(min-width:1024px){
+          .grid3{grid-template-columns:minmax(300px,0.95fr) minmax(320px,1.1fr) minmax(320px,1.05fr);padding-bottom:24px}
+          .col{display:flex!important}
+          .tabbar{display:none}
+        }
+        .field{width:100%;min-height:52px;padding:13px 14px;font-size:16px;border:1.5px solid ${C.line};border-radius:12px;background:${C.surface};color:${C.ink}}
+        .field:focus{border-color:${C.brand};outline:none}
+        .dot{width:18px;height:18px;border-radius:50%;display:block;transition:opacity .2s}
       `}</style>
 
-      <header style={{ borderBottom: `1px solid ${C.line}`, background: C.surface }} className="px-5 py-3 flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <div style={{ fontSize: 11, letterSpacing: "0.18em", color: C.sub }} className="font-mono uppercase">Soporte a la decision farmaceutica</div>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>CDSS de Mostrador</div>
+      {/* HEADER */}
+      <header style={{ borderBottom: `1px solid ${C.line}`, background: C.surface, position: "sticky", top: 0, zIndex: 30 }} className="px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div style={{ width: 38, height: 38, borderRadius: 11, background: C.brand, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, flexShrink: 0 }}>+</div>
+          <div className="min-w-0">
+            <div className="eyebrow" style={{ fontSize: 10 }}>Soporte a la decision farmaceutica</div>
+            <div style={{ fontSize: 17, fontWeight: 800, letterSpacing: "-.01em" }} className="truncate">CDSS de Mostrador</div>
+          </div>
         </div>
-        <div style={{ fontSize: 11, color: health ? C.green : C.amber }} className="font-mono">
-          {health ? `backend ok - reglas v${health.rules_version}` : "backend no conectado"}
+        <div style={{ fontSize: 11, color: health ? C.green : C.amber, textAlign: "right", flexShrink: 0 }} className="font-mono">
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: health ? C.green : C.amber, display: "inline-block", marginRight: 5 }} />
+          {health ? `backend ok` : "sin backend"}
+          {health && <div style={{ color: C.sub }}>reglas v{health.rules_version}</div>}
         </div>
       </header>
 
-      <div style={{ background: sv.bg, borderBottom: `1px solid ${sv.line}` }} className="px-5 py-3">
-        <div style={{ fontSize: 12, letterSpacing: "0.14em", color: sv.color }} className="font-mono uppercase font-semibold">{sv.label}</div>
-        <div style={{ fontSize: 15 }}>
-          {evalResult.alerts.length === 0
-            ? (cart.length ? "Sin alertas en las reglas curadas. Revisa el texto oficial de cada ficha." : "Agrega los farmacos del recipe para evaluar.")
-            : `${evalResult.alerts.length} alerta(s) entre ${cart.length} farmacos (reglas curadas).`}
+      {/* HERO — VEREDICTO (semaforo, elemento firma) */}
+      <div style={{ background: sv.bg, borderBottom: `1px solid ${sv.line}` }} className="px-4 py-4 flex items-center gap-4">
+        <div className="flex flex-col gap-2" aria-hidden="true" style={{ flexShrink: 0 }}>
+          {["red", "amber", "green"].map((k) => (
+            <span key={k} className="dot" style={{ background: SEV[k].dot, opacity: evalResult.verdict === k ? 1 : 0.16, boxShadow: evalResult.verdict === k ? `0 0 0 4px ${C.surface}, 0 0 12px ${SEV[k].dot}66` : "none" }} />
+          ))}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="eyebrow" style={{ color: sv.color }}>Veredicto del recipe</div>
+          <div style={{ fontSize: 26, fontWeight: 850, letterSpacing: "-.02em", color: sv.color, lineHeight: 1.1 }}>{sv.hero}</div>
+          <div style={{ fontSize: 14, color: C.ink, marginTop: 3 }}>
+            {evalResult.alerts.length === 0
+              ? (cart.length ? "Sin alertas en las reglas curadas. Revisa el texto oficial de cada ficha." : "Agrega los farmacos del recipe para evaluar.")
+              : `${evalResult.alerts.length} alerta(s) entre ${cart.length} farmacos.`}
+          </div>
+        </div>
+        <div className="flex gap-2" style={{ flexShrink: 0 }}>
+          <div style={{ background: C.surface, border: `1px solid ${sv.line}`, borderRadius: 12, padding: "8px 12px", textAlign: "center", minWidth: 56 }}>
+            <div style={{ fontSize: 22, fontWeight: 800 }}>{cart.length}</div>
+            <div style={{ fontSize: 10, color: C.sub }} className="font-mono uppercase">farmacos</div>
+          </div>
+          <div style={{ background: C.surface, border: `1px solid ${sv.line}`, borderRadius: 12, padding: "8px 12px", textAlign: "center", minWidth: 56 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: sv.color }}>{evalResult.alerts.length}</div>
+            <div style={{ fontSize: 10, color: C.sub }} className="font-mono uppercase">alertas</div>
+          </div>
         </div>
       </div>
 
+      {/* Banderas de paciente */}
       {evalResult.drug_flags && evalResult.drug_flags.length > 0 && (
-        <div style={{ background: C.redBg, borderBottom: `1px solid ${C.redLine}` }} className="px-5 py-2.5">
-          <div style={{ fontSize: 11, color: C.red }} className="font-mono uppercase font-semibold">Banderas de paciente</div>
+        <div style={{ background: C.redBg, borderBottom: `1px solid ${C.redLine}` }} className="px-4 py-2.5">
+          <div className="eyebrow" style={{ color: C.red }}>Banderas de paciente</div>
           {evalResult.drug_flags.map((f, i) => (
-            <div key={i} style={{ fontSize: 13.5, color: C.ink }}>
-              <strong>{f.drug}</strong> — {f.text}
-            </div>
+            <div key={i} style={{ fontSize: 14, color: C.ink, marginTop: 2 }}><strong>{f.drug}</strong> — {f.text}</div>
           ))}
         </div>
       )}
 
-      <main className="p-5 grid gap-5" style={{ gridTemplateColumns: "minmax(240px,0.9fr) minmax(260px,1fr) minmax(280px,1.1fr)" }}>
-        {/* Buscador */}
-        <section style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
-          <h2 style={{ fontSize: 15, fontWeight: 700 }}>01 - Buscador fonetico</h2>
-          <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={onSearchKey}
-            placeholder='ej: "asitromisina"' className="cf w-full mt-3"
-            style={{ padding: "11px 12px", fontSize: 16, border: `1px solid ${C.line}`, borderRadius: 8 }} />
-          <div style={{ fontSize: 11, color: C.sub }} className="font-mono mt-1.5"><kbd>/</kbd> buscar · <kbd>Enter</kbd> agregar</div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            {results.map((r, i) => (
-              <button key={r.atc} onClick={() => addDrug(r)} onMouseEnter={() => setActiveIdx(i)}
-                className="cf text-left flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg"
-                style={{ border: `1px solid ${i === activeIdx ? C.focus : C.line}`, background: i === activeIdx ? "#F3F6FF" : C.surface }}>
-                <div className="min-w-0">
-                  <div style={{ fontSize: 15, fontWeight: 600 }} className="truncate">{r.name}</div>
-                  <div style={{ fontSize: 11, color: C.sub }} className="font-mono">ATC {r.atc} · {r.inn}</div>
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: r.score >= 85 ? C.green : r.score >= 65 ? C.amber : C.sub, background: C.soft }} className="font-mono px-2 py-1 rounded">{r.score}%</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Carrito */}
-        <section style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
-          <div className="flex items-center justify-between">
-            <h2 style={{ fontSize: 15, fontWeight: 700 }}>02 - Carrito del recipe</h2>
-            {cart.length > 0 && <button onClick={() => setCart([])} className="cf" style={{ fontSize: 12, color: C.sub }}>Vaciar</button>}
-          </div>
-          <div className="mt-3 flex flex-col gap-2">
-            {!cart.length && <Empty text="Busca un principio activo y agregalo. Se consulta openFDA al instante." />}
-            {cart.map((d) => {
-              const worst = evalResult.alerts.find((a) => a.pair.includes(d.name))?.severity || "green";
-              const st = d.fda?.status;
-              return (
-                <div key={d.atc} className="flex rounded-lg overflow-hidden" style={{ border: `1px solid ${detailAtc === d.atc ? C.focus : C.line}` }}>
-                  <div style={{ width: 5, background: SEV[worst].color }} />
-                  <button onClick={() => setDetailAtc(d.atc)} className="cf flex-1 text-left px-3 py-2.5 min-w-0">
-                    <div style={{ fontSize: 15, fontWeight: 600 }} className="truncate">{d.name}</div>
-                    <div style={{ fontSize: 11, color: C.sub }} className="font-mono">
-                      ATC {d.atc} · RxCUI {d.rxcui || "—"} · {st === "ok" ? "ficha FDA" : st === "loading" ? "consultando…" : st === "error" ? "sin ficha FDA" : ""}
-                    </div>
-                  </button>
-                  <button onClick={() => removeDrug(d.atc)} className="cf px-3" style={{ color: C.sub }} aria-label={`Quitar ${d.name}`}>✕</button>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Alertas */}
-        <section className="flex flex-col gap-5">
-          <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
-            <h2 style={{ fontSize: 15, fontWeight: 700 }}>03 - Alertas de interaccion</h2>
-            <div style={{ fontSize: 12, color: C.sub }}>Reglas por clase — curaduria propia</div>
+      {/* MAIN — 3 columnas en PC, pestañas en telefono */}
+      <main className="grid3">
+        {/* COLUMNA 1 — RECIPE */}
+        <section className={"col " + (tab === "recipe" ? "active" : "")}>
+          <div className="card p-4">
+            <div className="eyebrow">Buscador fonetico</div>
+            <h2 className="h2" style={{ marginTop: 2 }}>Buscar farmaco</h2>
+            <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={onSearchKey}
+              placeholder='ej: "asitromisina"' className="field cf" style={{ marginTop: 12 }} inputMode="search" autoComplete="off" />
+            <div style={{ fontSize: 11, color: C.sub, marginTop: 8 }} className="font-mono"><kbd>/</kbd> buscar · <kbd>↑</kbd><kbd>↓</kbd> elegir · <kbd>Enter</kbd> agregar</div>
             <div className="mt-3 flex flex-col gap-2">
-              {!evalResult.alerts.length && cart.length > 1 && <div style={{ color: C.green, fontSize: 14 }}>Sin alertas en las reglas curadas.</div>}
-              {!evalResult.alerts.length && cart.length <= 1 && <Empty text="Se necesitan >=2 farmacos." />}
+              {results.map((r, i) => (
+                <button key={r.atc} onClick={() => addDrug(r)} onMouseEnter={() => setActiveIdx(i)}
+                  className="cf touch text-left flex items-center justify-between gap-2 px-3 rounded-xl"
+                  style={{ border: `1.5px solid ${i === activeIdx ? C.brand : C.line}`, background: i === activeIdx ? C.brandSoft : C.surface, paddingTop: 10, paddingBottom: 10 }}>
+                  <div className="min-w-0">
+                    <div style={{ fontSize: 16, fontWeight: 650 }} className="truncate">{r.name}</div>
+                    <div style={{ fontSize: 11, color: C.sub }} className="font-mono truncate">ATC {r.atc || "—"} · {r.inn}</div>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: r.score >= 85 ? C.green : r.score >= 65 ? C.amber : C.sub, background: C.soft }} className="font-mono px-2 py-1 rounded-lg shrink-0">{r.score}%</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="card p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="eyebrow">Recipe en curso</div>
+                <h2 className="h2" style={{ marginTop: 2 }}>Carrito</h2>
+              </div>
+              {cart.length > 0 && <button onClick={() => setCart([])} className="cf touch px-3 rounded-lg" style={{ fontSize: 13, color: C.sub, border: `1px solid ${C.line}` }}>Vaciar</button>}
+            </div>
+            <div className="mt-3 flex flex-col gap-2">
+              {!cart.length && <Empty text="Busca un principio activo y agregalo. Se consulta openFDA al instante." />}
+              {cart.map((d) => {
+                const worst = evalResult.alerts.find((a) => a.pair.includes(d.name))?.severity || "green";
+                const st = d.fda?.status;
+                return (
+                  <div key={d.atc} className="flex rounded-xl overflow-hidden touch" style={{ border: `1.5px solid ${detailAtc === d.atc ? C.brand : C.line}` }}>
+                    <div style={{ width: 6, background: SEV[worst].color, flexShrink: 0 }} />
+                    <button onClick={() => setDetailAtc(d.atc)} className="cf flex-1 text-left px-3 min-w-0" style={{ paddingTop: 9, paddingBottom: 9 }}>
+                      <div style={{ fontSize: 16, fontWeight: 650 }} className="truncate">{d.name}</div>
+                      <div style={{ fontSize: 11, color: C.sub }} className="font-mono truncate">
+                        ATC {d.atc || "—"} · {st === "ok" ? "ficha FDA ✓" : st === "loading" ? "consultando…" : st === "error" ? "sin ficha FDA" : ""}
+                      </div>
+                    </button>
+                    <button onClick={() => removeDrug(d.atc)} className="cf px-4" style={{ color: C.sub, fontSize: 18 }} aria-label={`Quitar ${d.name}`}>✕</button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* COLUMNA 2 — ALERTAS */}
+        <section className={"col " + (tab === "alertas" ? "active" : "")}>
+          <div className="card p-4">
+            <div className="eyebrow">Curaduria propia</div>
+            <h2 className="h2" style={{ marginTop: 2 }}>Alertas de interaccion</h2>
+            <div className="mt-3 flex flex-col gap-2">
+              {!evalResult.alerts.length && cart.length > 1 && <div style={{ color: C.green, fontSize: 14, fontWeight: 600 }}>Sin alertas en las reglas curadas.</div>}
+              {!evalResult.alerts.length && cart.length <= 1 && <Empty text="Se necesitan 2 o mas farmacos para evaluar interacciones." />}
               {evalResult.alerts.map((a, idx) => {
                 const s = SEV[a.severity]; const open = openAlert === idx;
                 return (
-                  <div key={idx} style={{ border: `1px solid ${s.line}`, background: s.bg, borderRadius: 10 }}>
-                    <button onClick={() => setOpenAlert(open ? null : idx)} className="cf w-full text-left px-3 py-2.5">
+                  <div key={idx} style={{ border: `1.5px solid ${s.line}`, background: s.bg, borderRadius: 12 }}>
+                    <button onClick={() => setOpenAlert(open ? null : idx)} className="cf touch w-full text-left px-3" style={{ paddingTop: 10, paddingBottom: 10 }}>
                       <div style={{ fontSize: 11, color: s.color }} className="font-mono uppercase font-semibold">
                         {s.label}{a.source && a.source !== "curaduria_propia" ? ` · ${a.source}` : ""}
                       </div>
-                      <div style={{ fontSize: 14, fontWeight: 600 }}>{a.pair[0]} + {a.pair[1]}</div>
+                      <div style={{ fontSize: 15, fontWeight: 650 }}>{a.pair[0]} + {a.pair[1]}</div>
                     </button>
                     {open && (
                       <div className="px-3 pb-3" style={{ borderTop: `1px solid ${s.line}` }}>
@@ -216,14 +276,15 @@ export default function App() {
             </div>
           </div>
 
-          <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
-            <h2 style={{ fontSize: 15, fontWeight: 700 }}>04 - Interacciones alimentarias</h2>
+          <div className="card p-4">
+            <div className="eyebrow">Alimentos</div>
+            <h2 className="h2" style={{ marginTop: 2 }}>Interacciones alimentarias</h2>
             <div className="mt-3 flex flex-col gap-2">
               {!evalResult.food_alerts.length && <Empty text="Sin alertas alimentarias para el carrito actual." />}
               {evalResult.food_alerts.map((f, i) => (
-                <div key={i} className="px-3 py-2.5 rounded-lg" style={{ background: C.soft, border: `1px solid ${C.line}` }}>
+                <div key={i} className="px-3 py-2.5 rounded-xl" style={{ background: C.soft, border: `1px solid ${C.line}` }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: C.sub }} className="font-mono">{f.drug}</div>
-                  <div style={{ fontSize: 13.5 }}>{f.text}</div>
+                  <div style={{ fontSize: 14 }}>{f.text}</div>
                 </div>
               ))}
             </div>
@@ -231,76 +292,85 @@ export default function App() {
 
           {evalResult.reconciliation && cart.length >= 2 && <Reconciliacion rec={evalResult.reconciliation} />}
         </section>
+
+        {/* COLUMNA 3 — CONSULTAS */}
+        <section className={"col " + (tab === "consultas" ? "active" : "")}>
+          <div className="card p-4">
+            <div className="eyebrow">Lineas segun guia citada</div>
+            <h2 className="h2" style={{ marginTop: 2 }}>Recomendacion terapeutica</h2>
+            <input value={indQuery} onChange={(e) => setIndQuery(e.target.value)} placeholder='ej: "hemorroides", "asma", "tos seca"'
+              className="field cf" style={{ marginTop: 12 }} inputMode="search" autoComplete="off" />
+            {recommendation === "none" && <div className="mt-3"><Empty text="No hay entrada de guia curada para ese termino. No se inventan lineas de tratamiento." /></div>}
+            {recommendation && recommendation !== "none" && (
+              <div className="mt-4">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <h3 style={{ fontSize: 19, fontWeight: 750 }}>{recommendation.title}</h3>
+                  <span style={{ fontSize: 11, color: C.sub }} className="font-mono">Fuente: {recommendation.guideline}</span>
+                </div>
+                <div className="mt-3 flex flex-col gap-3">
+                  {recommendation.lines.map((ln, i) => (
+                    <div key={i} style={{ border: `1px solid ${C.line}`, borderRadius: 12 }} className="overflow-hidden">
+                      <div style={{ background: C.brand, color: "#fff", fontSize: 11 }} className="font-mono uppercase px-3 py-2 font-semibold">{ln.line}</div>
+                      <div className="p-3 flex flex-col gap-2.5">
+                        {ln.options.map((o, j) => (
+                          <div key={j}>
+                            <div style={{ fontSize: 15, fontWeight: 650 }}>{o.drug}</div>
+                            {o.note && o.note !== "-" && <div style={{ fontSize: 13.5, color: C.sub }}>{o.note}</div>}
+                            {o.warn && <div style={{ fontSize: 13, color: C.amber, marginTop: 3 }}>⚠ {o.warn}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Calculadoras />
+
+          <div className="px-4 py-3 rounded-2xl" style={{ background: C.fdaBg, border: `1px solid ${C.fda}33`, fontSize: 13, lineHeight: 1.5 }}>
+            <strong>Procedencia.</strong> Ficha, interacciones, indicaciones y advertencias vienen del backend, que consulta <strong>openFDA</strong> (CC0) y, cuando aplica, <strong>CIMA/AEMPS</strong>. Las alertas de color y las lineas de tratamiento son <strong>curaduria propia</strong>. Orientativo: no sustituye el criterio clinico.
+            {attributions.length > 0 && (
+              <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.fda}22`, fontSize: 12, color: C.sub }}>
+                <strong>Fuentes:</strong> {attributions.map((a, i) => <span key={i}>{i > 0 ? " · " : " "}{a.source}</span>)}
+                <div style={{ marginTop: 4 }}>{attributions.filter((a) => !a.always).map((a, i) => <div key={i}>{a.text}</div>)}</div>
+              </div>
+            )}
+          </div>
+        </section>
       </main>
 
-      {/* Recomendacion */}
-      <section className="px-5 pb-10">
-        <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
-          <h2 style={{ fontSize: 15, fontWeight: 700 }}>05 - Recomendacion terapeutica</h2>
-          <div style={{ fontSize: 12, color: C.sub }}>Lineas segun guia citada — sin metricas inventadas</div>
-          <input value={indQuery} onChange={(e) => setIndQuery(e.target.value)} placeholder='ej: "hipertension", "asma", "tos seca"'
-            className="cf w-full mt-3" style={{ maxWidth: 420, padding: "11px 12px", fontSize: 15, border: `1px solid ${C.line}`, borderRadius: 8 }} />
-          {recommendation === "none" && <div className="mt-3"><Empty text="No hay entrada de guia curada para ese termino. (No se inventan lineas.)" /></div>}
-          {recommendation && recommendation !== "none" && (
-            <div className="mt-4">
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <h3 style={{ fontSize: 18, fontWeight: 700 }}>{recommendation.title}</h3>
-                <span style={{ fontSize: 12, color: C.sub }} className="font-mono">Fuente: {recommendation.guideline}</span>
-              </div>
-              <div className="mt-3 grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
-                {recommendation.lines.map((ln, i) => (
-                  <div key={i} style={{ border: `1px solid ${C.line}`, borderRadius: 10 }} className="overflow-hidden">
-                    <div style={{ background: C.ink, color: "#fff", fontSize: 11 }} className="font-mono uppercase px-3 py-1.5">{ln.line}</div>
-                    <div className="p-3 flex flex-col gap-2.5">
-                      {ln.options.map((o, j) => (
-                        <div key={j}>
-                          <div style={{ fontSize: 14, fontWeight: 600 }}>{o.drug}</div>
-                          {o.note && o.note !== "-" && <div style={{ fontSize: 13, color: C.sub }}>{o.note}</div>}
-                          {o.warn && <div style={{ fontSize: 12.5, color: C.amber, marginTop: 4 }}>⚠ {o.warn}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+      {/* BARRA DE PESTANAS (telefono / tactil) */}
+      <nav className="tabbar" role="tablist">
+        {[["recipe", "Recipe", "1"], ["alertas", "Alertas", "2"], ["consultas", "Consultas", "3"]].map(([k, label, num]) => (
+          <button key={k} className="tabbtn cf" data-active={tab === k} onClick={() => setTab(k)} role="tab" aria-selected={tab === k}>
+            <span className="tabdot" />
+            <span className="tabnum">{num}</span>
+            <span>{label}{k === "alertas" && evalResult.alerts.length > 0 ? ` (${evalResult.alerts.length})` : ""}</span>
+          </button>
+        ))}
+      </nav>
 
-        <div className="mt-5"><Calculadoras /></div>
-
-        <div className="mt-4 px-4 py-3 rounded-lg" style={{ background: C.fdaBg, border: `1px solid ${C.fda}33`, fontSize: 13, lineHeight: 1.5 }}>
-          <strong>Procedencia.</strong> Ficha, interacciones, indicaciones y advertencias de cada farmaco vienen del backend, que consulta <strong>openFDA</strong> (CC0) y, cuando aplica, <strong>CIMA/AEMPS</strong>. Las alertas de color y las lineas de tratamiento son <strong>curaduria propia</strong> (reglas versionadas). Orientativo: no sustituye el criterio clinico.
-          {attributions.length > 0 && (
-            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.fda}22`, fontSize: 12, color: C.sub }}>
-              <strong>Fuentes:</strong> {attributions.map((a, i) => (
-                <span key={i}>{i > 0 ? " · " : " "}{a.source}</span>
-              ))}
-              <div style={{ marginTop: 4 }}>{attributions.filter((a) => !a.always).map((a, i) => <div key={i}>{a.text}</div>)}</div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Panel ficha */}
+      {/* PANEL FICHA (slide-over) */}
       {detail && (
-        <div onClick={() => setDetailAtc(null)} style={{ position: "fixed", inset: 0, background: "rgba(11,18,32,0.45)", zIndex: 50 }} className="flex justify-end">
-          <div onClick={(e) => e.stopPropagation()} style={{ width: "min(520px,100%)", background: C.surface, height: "100%", overflowY: "auto" }}>
-            <div style={{ borderBottom: `1px solid ${C.line}`, position: "sticky", top: 0, background: C.surface }} className="px-5 py-3 flex items-center justify-between">
-              <div>
-                <div style={{ fontSize: 11, color: C.fda }} className="font-mono uppercase">Ficha oficial · openFDA</div>
-                <div style={{ fontSize: 18, fontWeight: 700 }}>{detail.name} <span style={{ fontWeight: 400, color: C.sub, fontSize: 14 }}>{detail.inn}</span></div>
+        <div onClick={() => setDetailAtc(null)} style={{ position: "fixed", inset: 0, background: "rgba(14,26,43,0.5)", zIndex: 60 }} className="flex justify-end">
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "min(560px,100%)", background: C.surface, height: "100%", overflowY: "auto" }}>
+            <div style={{ borderBottom: `1px solid ${C.line}`, position: "sticky", top: 0, background: C.surface, zIndex: 1 }} className="px-5 py-3 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="eyebrow" style={{ color: C.fda }}>Ficha oficial · openFDA</div>
+                <div style={{ fontSize: 19, fontWeight: 750 }} className="truncate">{detail.name} <span style={{ fontWeight: 400, color: C.sub, fontSize: 14 }}>{detail.inn}</span></div>
               </div>
-              <button onClick={() => setDetailAtc(null)} className="cf p-2" style={{ color: C.sub }}>✕</button>
+              <button onClick={() => setDetailAtc(null)} className="cf touch px-3 rounded-lg shrink-0" style={{ color: C.sub, border: `1px solid ${C.line}`, fontSize: 18 }} aria-label="Cerrar">✕</button>
             </div>
             <div className="p-5 flex flex-col gap-4">
               {detail.fda?.status === "loading" && <div style={{ color: C.fda }}>Consultando openFDA…</div>}
               {detail.fda?.status === "error" && (
                 <div>
-                  <div className="px-3 py-3 rounded-lg" style={{ background: C.amberBg, border: `1px solid ${C.amberLine}`, fontSize: 13.5 }}>
+                  <div className="px-3 py-3 rounded-xl" style={{ background: C.amberBg, border: `1px solid ${C.amberLine}`, fontSize: 13.5 }}>
                     {detail.fda.error} Muchas fichas de openFDA son de medicamentos comercializados en EE. UU.
                   </div>
-                  <button onClick={() => loadFicha(detail.atc, detail.inn, detail.name)} className="cf mt-3 px-3 py-2 rounded" style={{ border: `1px solid ${C.line}`, fontSize: 13 }}>Reintentar</button>
+                  <button onClick={() => loadFicha(detail.atc, detail.inn, detail.name)} className="cf touch mt-3 px-4 rounded-lg" style={{ border: `1px solid ${C.line}`, fontSize: 14 }}>Reintentar</button>
                 </div>
               )}
               {detail.fda?.status === "ok" && (
@@ -315,8 +385,8 @@ export default function App() {
                   <FDABlock title="Advertencias y precauciones" body={detail.fda.data.warnings || "No disponible."} />
                   <FDABlock title="Contraindicaciones" body={detail.fda.data.contraindications || "No disponible."} />
                   <CimaBlock inn={detail.inn} name={detail.name} />
-                  <MismaClase inn={detail.inn} onPick={(picked) => { setDetailAtc(null); const found = cart.find((c) => c.inn === picked); if (found) setDetailAtc(found.atc); }} />
-                  <div style={{ fontSize: 11, color: C.sub }} className="font-mono">Texto literal de la etiqueta FDA (CC0), en ingles. La ficha en espanol viene de CIMA (AEMPS) cuando esta disponible.</div>
+                  <MismaClase inn={detail.inn} />
+                  <div style={{ fontSize: 11, color: C.sub }} className="font-mono">Texto literal de la etiqueta FDA (CC0), en ingles. Usa "Traducir" para verlo en espanol; el original queda al lado.</div>
                 </>
               )}
             </div>
@@ -333,9 +403,12 @@ function Reconciliacion({ rec }) {
   const ac = rec.anticholinergic || {};
   const acColor = ac.total >= 3 ? C.red : ac.total >= 1 ? C.amber : C.green;
   return (
-    <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
+    <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 16 }} className="p-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 style={{ fontSize: 15, fontWeight: 700 }}>05 - Reconciliacion (bolsa del paciente)</h2>
+        <div>
+          <div className="eyebrow">Bolsa del paciente</div>
+          <h2 className="h2" style={{ marginTop: 2 }}>Reconciliacion</h2>
+        </div>
         <span style={{ fontSize: 11, color: C.sub }} className="font-mono">{rec.n_drugs} productos</span>
       </div>
 
@@ -376,14 +449,17 @@ function Reconciliacion({ rec }) {
 function Calculadoras() {
   const [tab, setTab] = React.useState("ped");
   return (
-    <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
+    <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 16 }} className="p-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 style={{ fontSize: 15, fontWeight: 700 }}>06 - Calculadoras</h2>
-        <span style={{ fontSize: 10, color: C.amber, background: C.amberBg, border: `1px solid ${C.amberLine}` }} className="font-mono uppercase px-2 py-1 rounded">La aritmetica es exacta · el dato mg/kg se verifica</span>
+        <div>
+          <div className="eyebrow">Aritmetica exacta</div>
+          <h2 className="h2" style={{ marginTop: 2 }}>Calculadoras</h2>
+        </div>
+        <span style={{ fontSize: 10, color: C.amber, background: C.amberBg, border: `1px solid ${C.amberLine}` }} className="font-mono uppercase px-2 py-1 rounded">el dato mg/kg se verifica</span>
       </div>
       <div className="flex gap-2 mt-3">
-        <button onClick={() => setTab("ped")} className="cf px-3 py-1.5 rounded" style={{ fontSize: 13, fontWeight: 600, border: `1px solid ${tab === "ped" ? C.focus : C.line}`, background: tab === "ped" ? "#F3F6FF" : C.surface }}>Dosis pediatrica</button>
-        <button onClick={() => setTab("crcl")} className="cf px-3 py-1.5 rounded" style={{ fontSize: 13, fontWeight: 600, border: `1px solid ${tab === "crcl" ? C.focus : C.line}`, background: tab === "crcl" ? "#F3F6FF" : C.surface }}>Funcion renal (CrCl)</button>
+        <button onClick={() => setTab("ped")} className="cf touch px-3 rounded-lg" style={{ fontSize: 14, fontWeight: 600, border: `1.5px solid ${tab === "ped" ? C.brand : C.line}`, background: tab === "ped" ? C.brandSoft : C.surface }}>Dosis pediatrica</button>
+        <button onClick={() => setTab("crcl")} className="cf touch px-3 rounded-lg" style={{ fontSize: 14, fontWeight: 600, border: `1.5px solid ${tab === "crcl" ? C.brand : C.line}`, background: tab === "crcl" ? C.brandSoft : C.surface }}>Funcion renal (CrCl)</button>
       </div>
       <div className="mt-4">{tab === "ped" ? <CalcPediatrica /> : <CalcRenal />}</div>
     </div>

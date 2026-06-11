@@ -7,8 +7,7 @@ router = APIRouter(prefix="/api/drugs", tags=["drugs"])
 
 @router.get("/search")
 def search(q: str = Query(..., min_length=1, description="Texto, tolera errores foneticos")):
-    from ..phonetic import search as phon_search
-    results = phon_search(q, engine.drugs())
+    results = engine.search_drugs(q)
     return {"query": q, "results": results}
 
 

@@ -4,6 +4,7 @@ recargan con reload() para permitir curaduria sin reiniciar."""
 import json
 from . import config
 from . import external
+from . import phonetic
 
 RANK = {"red": 3, "amber": 2, "green": 1}
 
@@ -13,6 +14,7 @@ _indications: dict = {}
 _pediatric: dict = {}
 _organ: dict = {}
 _anticholinergic: dict = {}
+_search_index: dict | None = None
 
 
 def _load_json(name: str) -> dict:
@@ -21,7 +23,7 @@ def _load_json(name: str) -> dict:
 
 
 def reload() -> None:
-    global _drugs, _rules, _indications, _pediatric, _organ, _anticholinergic
+    global _drugs, _rules, _indications, _pediatric, _organ, _anticholinergic, _search_index
     _drugs = _load_json("drugs.json")
     _rules = _load_json("rules.json")
     _indications = _load_json("indications.json")
@@ -35,6 +37,15 @@ def reload() -> None:
         if extra:
             base = set(d.get("syn", []))
             d["syn"] = sorted(base | set(extra))
+    # Construir el indice de busqueda UNA sola vez (clave para catalogos grandes)
+    _search_index = phonetic.build_index(_drugs["drugs"])
+
+
+def search_drugs(query: str) -> list[dict]:
+    """Busqueda rapida usando el indice precalculado (prefiltro + calculo fino)."""
+    if _search_index is None:
+        return phonetic.search(query, drugs())
+    return phonetic.search_indexed(query, _search_index)
 
 
 def drugs() -> list[dict]:
