@@ -30,6 +30,7 @@ jobs:
           if ! git diff --quiet -- backend/app/data/drugs.json; then
             git add backend/app/data/drugs.json
             git commit -m "auto: catalogo actualizado ($(date +%Y-%m-%d))"
+            git pull --rebase origin main
             git push
             echo "Catalogo actualizado y subido."
           else
