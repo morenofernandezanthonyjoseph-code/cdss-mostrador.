@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-enrich.py - COBERTURA MASIVA del catalogo (Capa 1) preservando la curaduria.
+enrich.py - COBERTURA MASIVA del catalogo (vademecum completo via RxClass/NLM),
+ROBUSTO: timeout por peticion, reintentos, progreso visible y tolerante a fallos.
 
-Que hace:
-  1. Pide a RxClass (NLM, gratis) TODAS las clases ATC nivel 4.
-  2. Por cada clase, trae sus farmacos con su codigo ATC -> miles de farmacos.
-  3. Aplica las etiquetas curadas de tag_map (metabolicas/PD) por INN.
-  4. FUSIONA tu curaduria manual (curated_drugs.json): para los farmacos que
-     curaste conserva tus tags, componentes, sinonimos y nombre en espanol.
-  5. Escribe app/data/drugs.json (archivo de ejecucion, grande).
+- Recorre TODAS las clases ATC nivel 4 -> miles de farmacos.
+- Si una peticion tarda o falla, reintenta; si igual falla, sigue con la siguiente.
+- Imprime progreso desde el primer segundo (con flush) para que SIEMPRE se vea
+  si avanza.
+- Preserva tu curaduria (curated_drugs.json): nunca la sobrescribe.
 
-NO se pierde tu curaduria: vive en curated_drugs.json y no se sobrescribe.
-Uso: python scripts/enrich.py  (requiere red; pensado para CI o local).
+Uso: python scripts/enrich.py
 """
 import json, sys, time, urllib.parse, urllib.request
 from pathlib import Path
@@ -25,20 +23,35 @@ CURATED = DATA_DIR / "curated_drugs.json"
 OUT = DATA_DIR / "drugs.json"
 USER_AGENT = "CDSS-Mostrador/1.0 (enrichment)"
 
+TIMEOUT = 20          # segundos maximos por peticion
+RETRIES = 3           # reintentos por peticion antes de rendirse con esa
+PAUSE = 0.08          # pausa entre peticiones (cortesia con la NLM)
+
+
+def log(msg):
+    """Imprime con flush inmediato para que el progreso se vea en vivo en CI."""
+    print(msg, flush=True)
+
 
 def http_get_json(url, params):
     qs = urllib.parse.urlencode(params)
-    req = urllib.request.Request(f"{url}?{qs}", headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    full = f"{url}?{qs}"
+    last = None
+    for attempt in range(1, RETRIES + 1):
+        try:
+            req = urllib.request.Request(full, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as e:  # noqa: BLE001
+            last = e
+            if attempt < RETRIES:
+                time.sleep(1.5 * attempt)  # espera creciente
+    raise last
 
 
 def all_atc4_classes():
-    try:
-        data = http_get_json(RXCLASS_ALL, {"classTypes": "ATC1-4"})
-    except Exception as e:
-        print(f"  ! No se pudo listar clases ATC: {e}", file=sys.stderr)
-        return []
+    log("Pidiendo la lista de clases ATC a la NLM...")
+    data = http_get_json(RXCLASS_ALL, {"classTypes": "ATC1-4"})
     out = []
     for c in (data.get("rxclassMinConceptList", {}).get("rxclassMinConcept", []) or []):
         cid = c.get("classId", "")
@@ -48,11 +61,7 @@ def all_atc4_classes():
 
 
 def class_members(atc_class_id):
-    try:
-        data = http_get_json(RXCLASS_MEMBERS, {"classId": atc_class_id, "relaSource": "ATC", "ttys": "IN"})
-    except Exception as e:
-        print(f"  ! Error en clase {atc_class_id}: {e}", file=sys.stderr)
-        return []
+    data = http_get_json(RXCLASS_MEMBERS, {"classId": atc_class_id, "relaSource": "ATC", "ttys": "IN"})
     members = (((data.get("drugMemberGroup") or {}).get("drugMember")) or [])
     out = []
     for m in members:
@@ -68,6 +77,7 @@ def build():
     es_names = tag_map.get("es_names", {})
     curated_tags = tag_map.get("curated_tags", {})
     catalog = {}
+    fallidas = 0
 
     def ensure(inn, rxcui=None, atc=None):
         k = inn.lower()
@@ -80,21 +90,38 @@ def build():
                 catalog[k]["atc"] = atc
         return catalog[k]
 
-    classes = all_atc4_classes()
-    print(f"Clases ATC nivel 4 encontradas: {len(classes)}")
-    for i, cid in enumerate(classes, 1):
-        for mem in class_members(cid):
-            ensure(mem["inn"], rxcui=mem["rxcui"], atc=cid)
-        if i % 50 == 0:
-            print(f"  ... {i}/{len(classes)} clases")
-        time.sleep(0.12)
+    try:
+        classes = all_atc4_classes()
+    except Exception as e:  # noqa: BLE001
+        log(f"ERROR: no se pudo obtener la lista de clases ATC ({e}).")
+        log("La NLM puede estar caida. Aborta SIN tocar tu catalogo actual.")
+        sys.exit(1)
 
+    total = len(classes)
+    log(f"Clases ATC a recorrer: {total}. Empezando...")
+    for i, cid in enumerate(classes, 1):
+        try:
+            for mem in class_members(cid):
+                ensure(mem["inn"], rxcui=mem["rxcui"], atc=cid)
+        except Exception as e:  # noqa: BLE001
+            fallidas += 1
+            log(f"  ! clase {cid} fallo, se omite ({e})")
+        if i % 25 == 0 or i == total:
+            log(f"  progreso: {i}/{total} clases · {len(catalog)} farmacos acumulados")
+        time.sleep(PAUSE)
+
+    log(f"Recorrido terminado. {len(catalog)} farmacos, {fallidas} clases omitidas.")
+
+    # Etiquetas por clase del tag_map (para interacciones)
+    log("Aplicando etiquetas de interaccion (tag_map)...")
     for tag, class_ids in tag_map.get("atc_tags", {}).items():
         for cid in class_ids:
-            for mem in class_members(cid):
-                ensure(mem["inn"])["tags"].add(tag)
-            time.sleep(0.12)
-
+            try:
+                for mem in class_members(cid):
+                    ensure(mem["inn"])["tags"].add(tag)
+            except Exception:  # noqa: BLE001
+                pass
+            time.sleep(PAUSE)
     for tag, inns in curated_tags.items():
         for inn in inns:
             ensure(inn)["tags"].add(tag)
@@ -107,6 +134,7 @@ def build():
                       "syn": sorted(set([inn] + ([name_es.lower()] if name_es.lower() != inn else [])))}
 
     if CURATED.exists():
+        log("Fusionando tu curaduria (curated_drugs.json)...")
         curated = json.loads(CURATED.read_text(encoding="utf-8"))
         for c in curated.get("drugs", []):
             inn = c["inn"].lower()
@@ -124,7 +152,8 @@ def build():
 
 
 def main():
-    print("Construyendo catalogo MASIVO desde RxClass (NLM) + curaduria...")
+    t0 = time.time()
+    log("=== enrich: catalogo masivo (robusto) ===")
     drugs = build()
     payload = {"version": time.strftime("%Y.%m.%d") + "-full",
                "source": "RxClass/NLM (todas las clases ATC) + curaduria (curated_drugs.json).",
@@ -132,7 +161,7 @@ def main():
                "drugs": drugs}
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     con_tags = sum(1 for d in drugs if d["tags"])
-    print(f"\nOK: {len(drugs)} farmacos ({con_tags} con etiquetas para interacciones).")
+    log(f"\nOK: {len(drugs)} farmacos escritos ({con_tags} con etiquetas) en {time.time()-t0:.0f}s.")
 
 
 if __name__ == "__main__":

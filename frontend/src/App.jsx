@@ -38,13 +38,17 @@ export default function App() {
   useEffect(() => { api.health().then(setHealth).catch(() => setHealth(null)); }, []);
   useEffect(() => { api.attributions().then((d) => setAttributions(d.attributions || [])).catch(() => {}); }, []);
 
-  // Busqueda en el backend (debounce)
+  // Busqueda en el backend (debounce). El "cancelado" evita que una respuesta
+  // que llega tarde repinte resultados despues de borrar o cambiar el texto.
   useEffect(() => {
-    if (query.trim().length < 2) { setResults([]); return; }
+    if (query.trim().length < 2) { setResults([]); setActiveIdx(0); return; }
+    let cancelado = false;
     const t = setTimeout(() => {
-      api.searchDrugs(query).then((d) => { setResults(d.results); setActiveIdx(0); }).catch(() => setResults([]));
+      api.searchDrugs(query)
+        .then((d) => { if (!cancelado) { setResults(d.results); setActiveIdx(0); } })
+        .catch(() => { if (!cancelado) setResults([]); });
     }, 120);
-    return () => clearTimeout(t);
+    return () => { cancelado = true; clearTimeout(t); };
   }, [query]);
 
   // Reevaluar interacciones cada vez que cambia el carrito
