@@ -15,3 +15,9 @@ def search(q: str = Query(..., min_length=1, description="Texto, tolera errores 
 @router.get("")
 def catalog():
     return {"version": engine.drugs_version(), "drugs": engine.drugs()}
+
+
+@router.get("/similar/{inn}")
+def similar(inn: str):
+    """Capa 2 - Parte A: farmacos de la misma clase terapeutica (ATC nivel 3)."""
+    return engine.same_class(inn)

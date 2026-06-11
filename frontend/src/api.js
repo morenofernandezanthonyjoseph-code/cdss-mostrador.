@@ -32,5 +32,6 @@ export const api = {
   pediatricAvailable: () => getJSON(`/api/calc/pediatric/available`),
   crcl: (age, weight, scr, sex) => getJSON(`/api/calc/crcl?age=${age}&weight=${weight}&scr=${scr}&sex=${sex}`),
   organ: (inn) => getJSON(`/api/calc/organ/${encodeURIComponent(inn)}`),
+  similar: (inn) => getJSON(`/api/drugs/similar/${encodeURIComponent(inn)}`),
   health: () => getJSON(`/health`),
 };

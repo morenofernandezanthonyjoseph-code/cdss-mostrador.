@@ -57,6 +57,26 @@ def find_drug(atc: str) -> dict | None:
     return next((d for d in drugs() if d["atc"] == atc), None)
 
 
+def find_by_inn(inn: str) -> dict | None:
+    inn = (inn or "").lower()
+    return next((d for d in drugs() if (d.get("inn") or "").lower() == inn), None)
+
+
+def same_class(inn: str) -> dict:
+    """Capa 2 - Parte A: fármacos de la MISMA clase terapéutica (ATC nivel 3,
+    primeros 4 caracteres). Hecho objetivo de la clasificacion, no una opinion."""
+    base = find_by_inn(inn)
+    if not base or not base.get("atc") or len(base["atc"]) < 4:
+        return {"atc3": None, "members": []}
+    atc3 = base["atc"][:4]
+    members = []
+    for d in drugs():
+        if d.get("atc", "")[:4] == atc3 and (d.get("inn") or "").lower() != inn.lower():
+            members.append({"name": d["name"], "inn": d["inn"], "atc": d.get("atc", "")})
+    members.sort(key=lambda x: x["name"])
+    return {"atc3": atc3, "of": base["name"], "members": members}
+
+
 def _tags(drug: dict) -> set[str]:
     return set(drug.get("tags", []))
 

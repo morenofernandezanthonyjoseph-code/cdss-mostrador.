@@ -315,6 +315,7 @@ export default function App() {
                   <FDABlock title="Advertencias y precauciones" body={detail.fda.data.warnings || "No disponible."} />
                   <FDABlock title="Contraindicaciones" body={detail.fda.data.contraindications || "No disponible."} />
                   <CimaBlock inn={detail.inn} name={detail.name} />
+                  <MismaClase inn={detail.inn} onPick={(picked) => { setDetailAtc(null); const found = cart.find((c) => c.inn === picked); if (found) setDetailAtc(found.atc); }} />
                   <div style={{ fontSize: 11, color: C.sub }} className="font-mono">Texto literal de la etiqueta FDA (CC0), en ingles. La ficha en espanol viene de CIMA (AEMPS) cuando esta disponible.</div>
                 </>
               )}
@@ -493,11 +494,119 @@ function Field({ title, body, color, strong, mono }) {
     <div style={{ fontSize: 13.5, fontWeight: strong ? 600 : 400 }} className={mono ? "font-mono" : ""}>{body}</div>
   </div>);
 }
+// Traduccion gratis al vuelo (endpoint publico de Google Translate, sin clave).
+// Se usa SOLO como ayuda: el original en ingles queda siempre visible.
+async function traducir(texto) {
+  const trozo = texto.slice(0, 4500); // limite del endpoint
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(trozo)}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("No se pudo traducir");
+  const data = await r.json();
+  return (data[0] || []).map((seg) => seg[0]).join("");
+}
+
 function FDABlock({ title, body, danger }) {
-  return (<div style={{ border: `1px solid ${danger ? C.redLine : C.line}`, background: danger ? C.redBg : C.surface, borderRadius: 10 }} className="p-3">
-    <div style={{ fontSize: 11, color: danger ? C.red : C.fda }} className="font-mono uppercase font-semibold">{title}</div>
-    <div style={{ fontSize: 13.5, lineHeight: 1.5, marginTop: 6, whiteSpace: "pre-wrap", maxHeight: 260, overflowY: "auto" }}>{body}</div>
-  </div>);
+  const [tr, setTr] = React.useState(null);     // texto traducido
+  const [loading, setLoading] = React.useState(false);
+  const [err, setErr] = React.useState("");
+  const traducible = typeof body === "string" && body.length > 3 && !body.startsWith("No disponible") && !body.startsWith("La etiqueta no");
+
+  const doTraducir = async () => {
+    if (tr) { setTr(null); return; }   // toggle: volver al ingles
+    setLoading(true); setErr("");
+    try { setTr(await traducir(body)); }
+    catch { setErr("No se pudo traducir ahora. Queda el original en ingles."); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div style={{ border: `1px solid ${danger ? C.redLine : C.line}`, background: danger ? C.redBg : C.surface, borderRadius: 10 }} className="p-3">
+      <div className="flex items-center justify-between gap-2">
+        <div style={{ fontSize: 11, color: danger ? C.red : C.fda }} className="font-mono uppercase font-semibold">{title}</div>
+        {traducible && (
+          <button onClick={doTraducir} className="cf px-2 py-0.5 rounded shrink-0" style={{ fontSize: 11, border: `1px solid ${C.line}`, color: C.fda }}>
+            {loading ? "..." : tr ? "Ver ingles" : "Traducir"}
+          </button>
+        )}
+      </div>
+      {err && <div style={{ fontSize: 12, color: C.amber, marginTop: 4 }}>{err}</div>}
+      {tr ? (
+        <div className="mt-1.5">
+          <div style={{ fontSize: 10, color: C.amber, fontWeight: 600 }} className="font-mono uppercase">Traduccion automatica — verificar contra el original</div>
+          <div style={{ fontSize: 13.5, lineHeight: 1.5, marginTop: 4, whiteSpace: "pre-wrap", maxHeight: 220, overflowY: "auto" }}>{tr}</div>
+          <details style={{ marginTop: 6 }}>
+            <summary style={{ fontSize: 11, color: C.sub, cursor: "pointer" }}>Ver original en ingles (FDA)</summary>
+            <div style={{ fontSize: 12.5, lineHeight: 1.45, marginTop: 4, whiteSpace: "pre-wrap", color: C.sub, maxHeight: 180, overflowY: "auto" }}>{body}</div>
+          </details>
+        </div>
+      ) : (
+        <div style={{ fontSize: 13.5, lineHeight: 1.5, marginTop: 6, whiteSpace: "pre-wrap", maxHeight: 260, overflowY: "auto" }}>{body}</div>
+      )}
+    </div>
+  );
+}
+
+function MismaClase({ inn }) {
+  const [state, setState] = React.useState({ status: "idle" });
+  const [openInn, setOpenInn] = React.useState(null);
+  const [fichas, setFichas] = React.useState({});
+
+  const load = async () => {
+    setState({ status: "loading" });
+    try { const r = await api.similar(inn); setState({ status: "ok", data: r }); }
+    catch (e) { setState({ status: "error", error: e.message }); }
+  };
+
+  const verFicha = async (m) => {
+    if (openInn === m.inn) { setOpenInn(null); return; }
+    setOpenInn(m.inn);
+    if (!fichas[m.inn]) {
+      try { const r = await api.label(m.inn); setFichas((f) => ({ ...f, [m.inn]: r.data })); }
+      catch { setFichas((f) => ({ ...f, [m.inn]: { _err: true } })); }
+    }
+  };
+
+  return (
+    <div style={{ border: `1px solid ${C.line}`, borderRadius: 10 }} className="p-3">
+      <div style={{ fontSize: 11, color: C.fda }} className="font-mono uppercase font-semibold">Misma clase terapeutica (ATC)</div>
+      {state.status === "idle" && (
+        <button onClick={load} className="cf mt-2 px-3 py-1.5 rounded" style={{ border: `1px solid ${C.line}`, fontSize: 13 }}>Ver farmacos parecidos</button>
+      )}
+      {state.status === "loading" && <div style={{ fontSize: 13, color: C.sub, marginTop: 6 }}>Buscando...</div>}
+      {state.status === "error" && <div style={{ fontSize: 13, color: C.amber, marginTop: 6 }}>{state.error}</div>}
+      {state.status === "ok" && (
+        <div className="mt-2">
+          {(!state.data.members || state.data.members.length === 0) ? (
+            <div style={{ fontSize: 13, color: C.sub }}>No se encontraron otros de la misma clase en el catalogo cargado.</div>
+          ) : (
+            <>
+              <div style={{ fontSize: 12, color: C.sub, marginBottom: 6 }}>Clase ATC {state.data.atc3}. Compara las fichas oficiales para ver las diferencias objetivas. La eleccion final es criterio del profesional.</div>
+              {state.data.members.map((m, i) => (
+                <div key={i} style={{ borderTop: i ? `1px solid ${C.line}` : "none", paddingTop: i ? 8 : 0, marginTop: i ? 8 : 0 }}>
+                  <button onClick={() => verFicha(m)} className="cf w-full text-left flex items-center justify-between">
+                    <span style={{ fontSize: 14, fontWeight: 600 }}>{m.name}</span>
+                    <span style={{ fontSize: 11, color: C.fda }} className="font-mono">{openInn === m.inn ? "ocultar" : "ver ficha"}</span>
+                  </button>
+                  {openInn === m.inn && (
+                    <div className="mt-1" style={{ fontSize: 12.5, color: C.ink }}>
+                      {!fichas[m.inn] && <span style={{ color: C.sub }}>Cargando ficha...</span>}
+                      {fichas[m.inn] && fichas[m.inn]._err && <span style={{ color: C.amber }}>Sin ficha openFDA para este farmaco.</span>}
+                      {fichas[m.inn] && !fichas[m.inn]._err && (
+                        <div style={{ background: C.soft, border: `1px solid ${C.line}`, borderRadius: 8, padding: 8, maxHeight: 180, overflowY: "auto", whiteSpace: "pre-wrap" }}>
+                          <strong>Indicacion (FDA):</strong> {fichas[m.inn].indications || "no disponible"}
+                          {fichas[m.inn].dosage ? <div style={{ marginTop: 6 }}><strong>Posologia:</strong> {fichas[m.inn].dosage.slice(0, 400)}</div> : null}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function CimaBlock({ inn, name }) {

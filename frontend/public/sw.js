@@ -11,7 +11,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   // Nunca cachear llamadas a la API ni a fuentes oficiales: datos siempre frescos.
-  if (url.pathname.startsWith("/api/") || url.hostname.includes("fda.gov") || url.hostname.includes("nlm.nih.gov") || url.hostname.includes("aemps.es")) {
+  if (url.pathname.startsWith("/api/") || url.hostname.includes("fda.gov") || url.hostname.includes("nlm.nih.gov") || url.hostname.includes("aemps.es") || url.hostname.includes("googleapis.com")) {
     return; // deja pasar a la red
   }
   if (e.request.method !== "GET") return;

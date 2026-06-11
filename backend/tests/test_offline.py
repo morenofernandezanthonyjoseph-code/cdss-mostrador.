@@ -144,3 +144,9 @@ def test_reconciliation_anticholinergic():
     ]}
     r = client.post("/api/interactions", json=cart).json()
     assert r["reconciliation"]["anticholinergic"]["total"] >= 6
+
+
+def test_same_class_insulins():
+    r = client.get("/api/drugs/similar/insulin isophane").json()
+    assert r["atc3"] == "A10A"
+    assert any("glargina" in m["name"].lower() for m in r["members"])
