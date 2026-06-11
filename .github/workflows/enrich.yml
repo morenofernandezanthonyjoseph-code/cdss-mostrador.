@@ -24,15 +24,9 @@ jobs:
         run: python backend/scripts/enrich.py
 
       - name: Commitear si hubo cambios
-        run: |
-          git config user.name "cdss-bot"
-          git config user.email "bot@users.noreply.github.com"
-          if ! git diff --quiet -- backend/app/data/drugs.json; then
-            git add backend/app/data/drugs.json
-            git commit -m "auto: catalogo actualizado ($(date +%Y-%m-%d))"
-            git pull --rebase origin main
-            git push
-            echo "Catalogo actualizado y subido."
-          else
-            echo "Sin cambios en el catalogo."
-          fi
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "auto: catalogo actualizado"
+          commit_user_name: "cdss-bot"
+          commit_user_email: "bot@users.noreply.github.com"
+          file_pattern: backend/app/data/drugs.json
