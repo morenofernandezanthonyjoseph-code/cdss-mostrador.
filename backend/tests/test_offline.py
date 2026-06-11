@@ -111,3 +111,36 @@ def test_duplicate_nsaid():
     cart = {"cart": [_d("Ibuprofeno", "ibuprofen", ["nsaid"]), _d("Diclofenaco", "diclofenac", ["nsaid"])]}
     r = client.post("/api/interactions", json=cart).json()
     assert any(a["id"] == "nsaid-dup" for a in r["alerts"])
+
+
+def test_pediatric_calc():
+    r = client.get("/api/calc/pediatric", params={"inn": "acetaminophen", "weight": 12}).json()
+    assert r["available"] and r["result"]["per_dose"]["mg_por_toma"] == 180.0
+
+
+def test_pediatric_cap():
+    r = client.get("/api/calc/pediatric", params={"inn": "acetaminophen", "weight": 80}).json()
+    assert r["result"]["per_dose"]["mg_por_toma"] == 1000.0 and r["result"]["per_dose"]["topeado"]
+
+
+def test_crcl():
+    r = client.get("/api/calc/crcl", params={"age": 70, "weight": 70, "scr": 1.0, "sex": "m"}).json()
+    assert r["ok"] and abs(r["result"]["crcl_ml_min"] - 68.1) < 0.3
+
+
+def test_ingredient_duplicate_paracetamol():
+    cart = {"cart": [
+        {"name": "Antigripal", "inn": "antigripal-pcm", "atc": "", "tags": [], "components": ["acetaminophen", "phenylephrine"]},
+        {"name": "Paracetamol", "inn": "acetaminophen", "atc": "", "tags": ["analgesic"]},
+    ]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert any(a["id"] == "dup-principio-activo" and a["severity"] == "red" for a in r["alerts"])
+
+
+def test_reconciliation_anticholinergic():
+    cart = {"cart": [
+        {"name": "Difenhidramina", "inn": "diphenhydramine", "atc": "", "tags": []},
+        {"name": "Amitriptilina", "inn": "amitriptyline", "atc": "", "tags": []},
+    ]}
+    r = client.post("/api/interactions", json=cart).json()
+    assert r["reconciliation"]["anticholinergic"]["total"] >= 6

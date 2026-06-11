@@ -1,0 +1,15 @@
+{
+  "version": "2026.06.10-seed",
+  "_AVISO_CRITICO": "Notas orientativas de ajuste por organo. NO son una pauta automatica: el ajuste exacto se consulta en la ficha tecnica de cada farmaco y/o fuente oficial. Semilla minima; ampliar con tu fuente.",
+  "renal": [
+    {"inn": "metformin", "note": "Suspender si TFG < 30 ml/min/1.73m2; precaucion 30-45. Riesgo de acidosis lactica.", "source": "VERIFICAR ficha tecnica."},
+    {"inn": "ibuprofen", "note": "Evitar AINE en enfermedad renal; pueden deteriorar la funcion renal.", "source": "VERIFICAR ficha tecnica."},
+    {"inn": "atenolol", "note": "Eliminacion renal: reducir dosis si TFG baja.", "source": "VERIFICAR ficha tecnica."},
+    {"inn": "enalapril", "note": "Iniciar a dosis baja y vigilar K+ y creatinina en enfermedad renal.", "source": "VERIFICAR ficha tecnica."}
+  ],
+  "hepatic": [
+    {"inn": "acetaminophen", "note": "Reducir dosis maxima en hepatopatia; riesgo de hepatotoxicidad. Evitar con alcohol.", "source": "VERIFICAR ficha tecnica."},
+    {"inn": "atorvastatin", "note": "Contraindicada en enfermedad hepatica activa; vigilar transaminasas.", "source": "VERIFICAR ficha tecnica."},
+    {"inn": "diazepam", "note": "Metabolismo hepatico: acumulacion en insuficiencia hepatica; reducir dosis.", "source": "VERIFICAR ficha tecnica."}
+  ]
+}

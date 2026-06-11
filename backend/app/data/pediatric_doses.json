@@ -1,0 +1,27 @@
+{
+  "version": "2026.06.10-seed",
+  "_AVISO_CRITICO": "TABLA SEMILLA MINIMA. Cada dosis DEBE verificarse contra una fuente oficial (formulario nacional, OMS, Pediamecum, BNFc o manual licenciado) ANTES de uso clinico. La calculadora solo hace la aritmetica; la responsabilidad del dato es del farmaceutico. Ampliar esta tabla con tu fuente confiable.",
+  "note": "Modos: usar 'per_dose' (mg/kg por toma + cada cuantas horas) o 'per_day' (mg/kg/dia + numero de tomas). max_single_mg y max_daily_mg son topes de seguridad (no superar la dosis de adulto).",
+  "drugs": [
+    {
+      "inn": "acetaminophen", "name": "Paracetamol", "route": "oral",
+      "per_dose": {"mg_per_kg": 15, "freq_hours": 6, "max_single_mg": 1000},
+      "max_daily_mg": 4000,
+      "source": "Rango estandar 10-15 mg/kg/dosis c/4-6h. VERIFICAR fuente oficial.",
+      "note": "No exceder 75 mg/kg/dia ni la dosis de adulto. Precaucion en hepatopatia."
+    },
+    {
+      "inn": "ibuprofen", "name": "Ibuprofeno", "route": "oral", "min_age_months": 6,
+      "per_dose": {"mg_per_kg": 10, "freq_hours": 8, "max_single_mg": 400},
+      "max_daily_mg": 1200,
+      "source": "Rango estandar 5-10 mg/kg/dosis c/6-8h. VERIFICAR fuente oficial.",
+      "note": "No usar en < 6 meses. Con alimentos. Precaucion renal/GI y en deshidratacion."
+    },
+    {
+      "inn": "amoxicillin", "name": "Amoxicilina", "route": "oral",
+      "per_day": {"mg_per_kg_day": 50, "divisions": 3, "max_daily_mg": 3000},
+      "source": "Rango amplio 40-90 mg/kg/dia segun indicacion. VERIFICAR fuente oficial e indicacion.",
+      "note": "La dosis depende de la infeccion (otitis usa dosis altas). Requiere prescripcion."
+    }
+  ]
+}

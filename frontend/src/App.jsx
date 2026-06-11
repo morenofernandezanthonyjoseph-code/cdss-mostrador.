@@ -23,7 +23,7 @@ export default function App() {
   const [results, setResults] = useState([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [cart, setCart] = useState([]);            // {name,inn,atc,tags,rxcui,fda,cima}
-  const [evalResult, setEvalResult] = useState({ verdict: "green", alerts: [], food_alerts: [], drug_flags: [] });
+  const [evalResult, setEvalResult] = useState({ verdict: "green", alerts: [], food_alerts: [], drug_flags: [], reconciliation: null });
   const [openAlert, setOpenAlert] = useState(null);
   const [detailAtc, setDetailAtc] = useState(null);
   const [indQuery, setIndQuery] = useState("");
@@ -46,7 +46,7 @@ export default function App() {
 
   // Reevaluar interacciones cada vez que cambia el carrito
   useEffect(() => {
-    if (!cart.length) { setEvalResult({ verdict: "green", alerts: [], food_alerts: [], drug_flags: [] }); return; }
+    if (!cart.length) { setEvalResult({ verdict: "green", alerts: [], food_alerts: [], drug_flags: [], reconciliation: null }); return; }
     const payload = cart.map(({ name, inn, atc, tags }) => ({ name, inn, atc, tags }));
     api.interactions(payload).then(setEvalResult).catch(() => {});
   }, [cart]);
@@ -228,6 +228,8 @@ export default function App() {
               ))}
             </div>
           </div>
+
+          {evalResult.reconciliation && cart.length >= 2 && <Reconciliacion rec={evalResult.reconciliation} />}
         </section>
       </main>
 
@@ -264,6 +266,9 @@ export default function App() {
             </div>
           )}
         </div>
+
+        <div className="mt-5"><Calculadoras /></div>
+
         <div className="mt-4 px-4 py-3 rounded-lg" style={{ background: C.fdaBg, border: `1px solid ${C.fda}33`, fontSize: 13, lineHeight: 1.5 }}>
           <strong>Procedencia.</strong> Ficha, interacciones, indicaciones y advertencias de cada farmaco vienen del backend, que consulta <strong>openFDA</strong> (CC0) y, cuando aplica, <strong>CIMA/AEMPS</strong>. Las alertas de color y las lineas de tratamiento son <strong>curaduria propia</strong> (reglas versionadas). Orientativo: no sustituye el criterio clinico.
           {attributions.length > 0 && (
@@ -302,6 +307,9 @@ export default function App() {
                 <>
                   {detail.fda.data.pharm_class && <FDABlock title="Clase farmacologica (FDA)" body={detail.fda.data.pharm_class} />}
                   {detail.fda.data.boxed && <FDABlock title="Recuadro de advertencia" body={detail.fda.data.boxed} danger />}
+                  {detail.fda.data.dosage && <FDABlock title="Posologia (texto oficial FDA)" body={detail.fda.data.dosage} />}
+                  {detail.fda.data.specific_populations && <FDABlock title="Poblaciones especiales (renal/hepatico/embarazo)" body={detail.fda.data.specific_populations} />}
+                  {detail.fda.data.pediatric && <FDABlock title="Uso pediatrico (FDA)" body={detail.fda.data.pediatric} />}
                   <FDABlock title="Interacciones (texto oficial FDA)" body={detail.fda.data.interactions || "La etiqueta no incluye seccion de interacciones."} />
                   <FDABlock title="Indicaciones aprobadas" body={detail.fda.data.indications || "No disponible."} />
                   <FDABlock title="Advertencias y precauciones" body={detail.fda.data.warnings || "No disponible."} />
@@ -319,6 +327,166 @@ export default function App() {
 }
 
 function Empty({ text }) { return <div style={{ fontSize: 13, color: C.sub, background: C.soft, border: `1px dashed ${C.line}`, borderRadius: 8 }} className="px-3 py-4 text-center">{text}</div>; }
+
+function Reconciliacion({ rec }) {
+  const ac = rec.anticholinergic || {};
+  const acColor = ac.total >= 3 ? C.red : ac.total >= 1 ? C.amber : C.green;
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 style={{ fontSize: 15, fontWeight: 700 }}>05 - Reconciliacion (bolsa del paciente)</h2>
+        <span style={{ fontSize: 11, color: C.sub }} className="font-mono">{rec.n_drugs} productos</span>
+      </div>
+
+      <div className="mt-3 grid gap-2" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="px-3 py-2.5 rounded-lg" style={{ background: rec.polypharmacy ? C.amberBg : C.soft, border: `1px solid ${rec.polypharmacy ? C.amberLine : C.line}` }}>
+          <div style={{ fontSize: 11, color: C.sub }} className="font-mono uppercase">Polifarmacia</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: rec.polypharmacy ? C.amber : C.ink }}>{rec.polypharmacy ? "Si (>=5 farmacos)" : "No"}</div>
+        </div>
+        <div className="px-3 py-2.5 rounded-lg" style={{ background: ac.total >= 3 ? C.redBg : ac.total >= 1 ? C.amberBg : C.soft, border: `1px solid ${ac.total >= 3 ? C.redLine : ac.total >= 1 ? C.amberLine : C.line}` }}>
+          <div style={{ fontSize: 11, color: C.sub }} className="font-mono uppercase">Carga anticolinergica</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: acColor }}>{ac.total} · {ac.level}</div>
+        </div>
+      </div>
+
+      {ac.breakdown && ac.breakdown.length > 0 && (
+        <div className="mt-2 px-3 py-2 rounded-lg" style={{ background: C.soft, border: `1px solid ${C.line}` }}>
+          <div style={{ fontSize: 11, color: C.sub }} className="font-mono">Aportan carga: {ac.breakdown.map((b, i) => <span key={i}>{i ? " · " : ""}{b.drug} ({b.score})</span>)}</div>
+          <div style={{ fontSize: 11.5, color: C.sub, marginTop: 3 }}>{ac.note} · Escala {ac.scale}.</div>
+        </div>
+      )}
+
+      {rec.ingredient_duplications && rec.ingredient_duplications.length > 0 && (
+        <div className="mt-2">
+          <div style={{ fontSize: 11, color: C.red }} className="font-mono uppercase font-semibold">Duplicidad de principio activo</div>
+          {rec.ingredient_duplications.map((d, i) => (
+            <div key={i} className="px-3 py-2 rounded-lg mt-1" style={{ background: d.severity === "red" ? C.redBg : C.amberBg, border: `1px solid ${d.severity === "red" ? C.redLine : C.amberLine}` }}>
+              <div style={{ fontSize: 13.5, fontWeight: 600 }}>{d.ingredient}</div>
+              <div style={{ fontSize: 12.5, color: C.sub }}>en: {d.drugs.join(", ")}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ fontSize: 11.5, color: C.sub, marginTop: 8 }}>Vista pensada para revisar la "bolsa" del paciente polimedicado: detecta el mismo principio activo en varios productos y resume la carga anticolinergica total.</div>
+    </div>
+  );
+}
+
+function Calculadoras() {
+  const [tab, setTab] = React.useState("ped");
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 12 }} className="p-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 style={{ fontSize: 15, fontWeight: 700 }}>06 - Calculadoras</h2>
+        <span style={{ fontSize: 10, color: C.amber, background: C.amberBg, border: `1px solid ${C.amberLine}` }} className="font-mono uppercase px-2 py-1 rounded">La aritmetica es exacta · el dato mg/kg se verifica</span>
+      </div>
+      <div className="flex gap-2 mt-3">
+        <button onClick={() => setTab("ped")} className="cf px-3 py-1.5 rounded" style={{ fontSize: 13, fontWeight: 600, border: `1px solid ${tab === "ped" ? C.focus : C.line}`, background: tab === "ped" ? "#F3F6FF" : C.surface }}>Dosis pediatrica</button>
+        <button onClick={() => setTab("crcl")} className="cf px-3 py-1.5 rounded" style={{ fontSize: 13, fontWeight: 600, border: `1px solid ${tab === "crcl" ? C.focus : C.line}`, background: tab === "crcl" ? "#F3F6FF" : C.surface }}>Funcion renal (CrCl)</button>
+      </div>
+      <div className="mt-4">{tab === "ped" ? <CalcPediatrica /> : <CalcRenal />}</div>
+    </div>
+  );
+}
+
+function CalcPediatrica() {
+  const [drugs, setDrugs] = React.useState([]);
+  const [inn, setInn] = React.useState("");
+  const [weight, setWeight] = React.useState("");
+  const [ageM, setAgeM] = React.useState("");
+  const [res, setRes] = React.useState(null);
+  const [err, setErr] = React.useState("");
+
+  React.useEffect(() => { api.pediatricAvailable().then((d) => { setDrugs(d.drugs); if (d.drugs[0]) setInn(d.drugs[0].inn); }).catch(() => {}); }, []);
+
+  const calc = async () => {
+    setErr(""); setRes(null);
+    const w = parseFloat(weight);
+    if (!inn || !w || w <= 0) { setErr("Elegi un farmaco y un peso valido."); return; }
+    try {
+      const d = await api.pediatric(inn, w, ageM ? parseFloat(ageM) : undefined);
+      if (!d.available) { setErr(d.msg); return; }
+      setRes(d.result);
+    } catch (e) { setErr(e.message); }
+  };
+
+  return (
+    <div>
+      <div className="grid gap-2" style={{ gridTemplateColumns: "1.4fr 1fr 1fr auto" }}>
+        <select value={inn} onChange={(e) => setInn(e.target.value)} className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }}>
+          {drugs.length === 0 && <option>Sin tabla cargada</option>}
+          {drugs.map((d) => <option key={d.inn} value={d.inn}>{d.name}</option>)}
+        </select>
+        <input value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="Peso (kg)" inputMode="decimal" className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }} />
+        <input value={ageM} onChange={(e) => setAgeM(e.target.value)} placeholder="Edad (meses)" inputMode="decimal" className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }} />
+        <button onClick={calc} className="cf px-4 rounded" style={{ background: C.ink, color: "#fff", fontSize: 14, fontWeight: 600 }}>Calcular</button>
+      </div>
+      {err && <div style={{ fontSize: 13, color: C.amber, marginTop: 8 }}>{err}</div>}
+      {res && (
+        <div className="mt-3 p-3 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.soft }}>
+          <div style={{ fontSize: 15, fontWeight: 700 }}>{res.drug} · {res.weight_kg} kg</div>
+          {res.per_dose && (
+            <div style={{ fontSize: 14, marginTop: 6 }}>
+              <strong>{res.per_dose.mg_por_toma} mg por toma</strong> cada {res.per_dose.frecuencia_horas} h
+              <div style={{ fontSize: 12, color: C.sub }} className="font-mono">{res.per_dose.calculo}{res.per_dose.topeado ? ` (topeado al maximo ${res.per_dose.max_por_toma_mg} mg)` : ""}</div>
+            </div>
+          )}
+          {res.per_day && (
+            <div style={{ fontSize: 14, marginTop: 6 }}>
+              <strong>{res.per_day.mg_por_dia} mg/dia</strong> en {res.per_day.tomas_por_dia} tomas ({res.per_day.mg_por_toma} mg c/u)
+              <div style={{ fontSize: 12, color: C.sub }} className="font-mono">{res.per_day.calculo}</div>
+            </div>
+          )}
+          {res.warnings && res.warnings.length > 0 && res.warnings.map((w, i) => <div key={i} style={{ fontSize: 13, color: C.red, marginTop: 4 }}>⚠ {w}</div>)}
+          {res.note && <div style={{ fontSize: 12.5, color: C.sub, marginTop: 6 }}>{res.note}</div>}
+          <div style={{ fontSize: 11, color: C.amber, marginTop: 8, fontWeight: 600 }}>Fuente del dato: {res.source} — VERIFICAR antes de administrar.</div>
+        </div>
+      )}
+      <div style={{ fontSize: 11.5, color: C.sub, marginTop: 8 }}>La calculadora solo multiplica peso x mg/kg con topes. El valor mg/kg sale de la tabla curada (pediatric_doses.json); ampliala desde tu fuente oficial.</div>
+    </div>
+  );
+}
+
+function CalcRenal() {
+  const [age, setAge] = React.useState("");
+  const [weight, setWeight] = React.useState("");
+  const [scr, setScr] = React.useState("");
+  const [sex, setSex] = React.useState("m");
+  const [res, setRes] = React.useState(null);
+  const [err, setErr] = React.useState("");
+
+  const calc = async () => {
+    setErr(""); setRes(null);
+    const a = parseFloat(age), w = parseFloat(weight), s = parseFloat(scr);
+    if (!a || !w || !s) { setErr("Completa edad, peso y creatinina."); return; }
+    try { const d = await api.crcl(a, w, s, sex); if (d.ok) setRes(d.result); else setErr("Datos invalidos."); }
+    catch (e) { setErr(e.message); }
+  };
+
+  return (
+    <div>
+      <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr 1fr 1fr auto" }}>
+        <input value={age} onChange={(e) => setAge(e.target.value)} placeholder="Edad (anos)" inputMode="decimal" className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }} />
+        <input value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="Peso (kg)" inputMode="decimal" className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }} />
+        <input value={scr} onChange={(e) => setScr(e.target.value)} placeholder="Creatinina (mg/dL)" inputMode="decimal" className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }} />
+        <select value={sex} onChange={(e) => setSex(e.target.value)} className="cf" style={{ padding: "9px 10px", border: `1px solid ${C.line}`, borderRadius: 8, fontSize: 14 }}>
+          <option value="m">Hombre</option>
+          <option value="f">Mujer</option>
+        </select>
+        <button onClick={calc} className="cf px-4 rounded" style={{ background: C.ink, color: "#fff", fontSize: 14, fontWeight: 600 }}>Calcular</button>
+      </div>
+      {err && <div style={{ fontSize: 13, color: C.amber, marginTop: 8 }}>{err}</div>}
+      {res && (
+        <div className="mt-3 p-3 rounded-lg" style={{ border: `1px solid ${C.line}`, background: C.soft }}>
+          <div style={{ fontSize: 18, fontWeight: 700 }}>{res.crcl_ml_min} ml/min</div>
+          <div style={{ fontSize: 14, fontWeight: 600 }}>{res.categoria}</div>
+          <div style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>{res.formula}. {res.aviso}</div>
+        </div>
+      )}
+      <div style={{ fontSize: 11.5, color: C.sub, marginTop: 8 }}>Cockcroft-Gault. El ajuste de dosis de cada farmaco se consulta en su ficha tecnica; esta calculadora solo estima el aclaramiento.</div>
+    </div>
+  );
+}
 function Field({ title, body, color, strong, mono }) {
   return (<div className="pt-2">
     <div style={{ fontSize: 10.5, color: color || C.sub }} className="font-mono uppercase">{title}</div>

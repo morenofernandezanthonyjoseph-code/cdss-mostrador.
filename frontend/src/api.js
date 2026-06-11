@@ -28,5 +28,9 @@ export const api = {
   rules: () => getJSON(`/api/rules`),
   attributions: () => getJSON(`/api/attributions`),
   sources: () => getJSON(`/api/sources`),
+  pediatric: (inn, weight, ageMonths) => getJSON(`/api/calc/pediatric?inn=${encodeURIComponent(inn)}&weight=${weight}${ageMonths ? `&age_months=${ageMonths}` : ""}`),
+  pediatricAvailable: () => getJSON(`/api/calc/pediatric/available`),
+  crcl: (age, weight, scr, sex) => getJSON(`/api/calc/crcl?age=${age}&weight=${weight}&scr=${scr}&sex=${sex}`),
+  organ: (inn) => getJSON(`/api/calc/organ/${encodeURIComponent(inn)}`),
   health: () => getJSON(`/health`),
 };

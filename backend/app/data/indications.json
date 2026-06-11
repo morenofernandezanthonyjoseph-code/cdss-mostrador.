@@ -1,57 +1,985 @@
 {
-  "version": "2026.06.10",
-  "note": "Lineas de tratamiento atadas a guia citada. SIN porcentajes de eficacia inventados. 'guideline' debe nombrar la guia y su ano vigente al curar.",
+  "version": "2026.06.10-ind",
+  "note": "Lineas de tratamiento curadas para mostrador. OTC + triage (cuando derivar). SIN porcentajes de eficacia inventados. Orientativo; no sustituye criterio clinico ni ficha tecnica. Verificar protocolo local. Editable: agregar mas indicaciones con el mismo formato.",
   "indications": [
     {
-      "keys": ["hipertension", "hta", "presion alta", "tension alta"],
+      "keys": [
+        "hipertension",
+        "hta",
+        "presion alta",
+        "tension alta"
+      ],
       "title": "Hipertension arterial",
       "guideline": "Guias ESC/ESH (verificar ano vigente).",
       "lines": [
-        {"line": "1.a linea", "options": [
-          {"drug": "IECA / ARA-II (enalapril, losartan)", "note": "Especialmente con diabetes o proteinuria.", "warn": "Contraindicados en embarazo. Vigilar K+ y funcion renal."},
-          {"drug": "Calcioantagonista DHP (amlodipino)", "note": "Buena opcion en mayores.", "warn": "Vigilar edema maleolar."},
-          {"drug": "Tiazidico (hidroclorotiazida)", "note": "Util en combinacion.", "warn": "Precaucion en gota e hipokalemia."}
-        ]},
-        {"line": "Combinacion", "options": [
-          {"drug": "IECA/ARA-II + calcioantagonista o tiazida", "note": "De inicio si TA muy elevada.", "warn": "No combinar IECA + ARA-II."}
-        ]}
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "IECA / ARA-II (enalapril, losartan)",
+              "note": "Especialmente con diabetes o proteinuria.",
+              "warn": "Contraindicados en embarazo. Vigilar K+ y funcion renal."
+            },
+            {
+              "drug": "Calcioantagonista DHP (amlodipino)",
+              "note": "Buena opcion en mayores.",
+              "warn": "Vigilar edema maleolar."
+            },
+            {
+              "drug": "Tiazidico (hidroclorotiazida)",
+              "note": "Util en combinacion.",
+              "warn": "Precaucion en gota e hipokalemia."
+            }
+          ]
+        },
+        {
+          "line": "Combinacion",
+          "options": [
+            {
+              "drug": "IECA/ARA-II + calcioantagonista o tiazida",
+              "note": "De inicio si TA muy elevada.",
+              "warn": "No combinar IECA + ARA-II."
+            }
+          ]
+        }
       ]
     },
     {
-      "keys": ["asma"],
+      "keys": [
+        "asma"
+      ],
       "title": "Asma",
       "guideline": "Estrategia GINA (verificar ano vigente).",
       "lines": [
-        {"line": "Controlador", "options": [{"drug": "Corticoide inhalado + formoterol", "note": "GINA prioriza CI-formoterol como base y rescate.", "warn": "No usar SABA en monoterapia como unico tratamiento."}]},
-        {"line": "Rescate", "options": [{"drug": "SABA (salbutamol) o CI-formoterol", "note": "Para sintomas agudos.", "warn": "Uso frecuente de SABA = mal control: reevaluar."}]},
-        {"line": "Evitar", "options": [{"drug": "Betabloqueantes no selectivos", "note": "-", "warn": "Pueden desencadenar broncoespasmo."}]}
+        {
+          "line": "Controlador",
+          "options": [
+            {
+              "drug": "Corticoide inhalado + formoterol",
+              "note": "GINA prioriza CI-formoterol como base y rescate.",
+              "warn": "No usar SABA en monoterapia como unico tratamiento."
+            }
+          ]
+        },
+        {
+          "line": "Rescate",
+          "options": [
+            {
+              "drug": "SABA (salbutamol) o CI-formoterol",
+              "note": "Para sintomas agudos.",
+              "warn": "Uso frecuente de SABA = mal control: reevaluar."
+            }
+          ]
+        },
+        {
+          "line": "Evitar",
+          "options": [
+            {
+              "drug": "Betabloqueantes no selectivos",
+              "note": "-",
+              "warn": "Pueden desencadenar broncoespasmo."
+            }
+          ]
+        }
       ]
     },
     {
-      "keys": ["diabetes", "dm2", "azucar alta"],
+      "keys": [
+        "diabetes",
+        "dm2",
+        "azucar alta"
+      ],
       "title": "Diabetes tipo 2",
       "guideline": "ADA Standards of Care (verificar ano vigente).",
       "lines": [
-        {"line": "Base", "options": [{"drug": "Metformina", "note": "Salvo contraindicacion; con alimentos.", "warn": "Precaucion en TFG baja."}]},
-        {"line": "Segun comorbilidad", "options": [{"drug": "iSGLT2 / arGLP-1", "note": "Preferidos con enfermedad CV, IC o renal.", "warn": "Requieren prescripcion y seguimiento."}]}
+        {
+          "line": "Base",
+          "options": [
+            {
+              "drug": "Metformina",
+              "note": "Salvo contraindicacion; con alimentos.",
+              "warn": "Precaucion en TFG baja."
+            }
+          ]
+        },
+        {
+          "line": "Segun comorbilidad",
+          "options": [
+            {
+              "drug": "iSGLT2 / arGLP-1",
+              "note": "Preferidos con enfermedad CV, IC o renal.",
+              "warn": "Requieren prescripcion y seguimiento."
+            }
+          ]
+        }
       ]
     },
     {
-      "keys": ["tos seca", "tos"],
-      "title": "Tos seca",
-      "guideline": "Manejo sintomatico - sin lineas rigidas.",
-      "lines": [
-        {"line": "Antes de medicar", "options": [{"drug": "Descartar causa", "note": "La tos seca persistente puede ser efecto del IECA.", "warn": "Si toma IECA: derivar para evaluar cambio a ARA-II, no encadenar antitusivos."}]},
-        {"line": "Sintomatico", "options": [{"drug": "Dextrometorfano", "note": "Antitusivo central para tos no productiva.", "warn": "Riesgo serotoninergico con ISRS/IMAO. No en tos productiva."}]}
-      ]
-    },
-    {
-      "keys": ["dolor", "analgesia"],
+      "keys": [
+        "dolor",
+        "analgesia",
+        "dolor leve"
+      ],
       "title": "Dolor leve-moderado",
       "guideline": "Escalera analgesica / criterios de seguridad.",
       "lines": [
-        {"line": "1.a eleccion", "options": [{"drug": "Paracetamol", "note": "Mejor perfil GI/renal/CV.", "warn": "Vigilar dosis maxima; precaucion en hepatopatia."}]},
-        {"line": "2.a eleccion", "options": [{"drug": "AINE (ibuprofeno)", "note": "Si componente inflamatorio.", "warn": "Precaucion GI, renal, CV y con anticoagulantes."}]}
+        {
+          "line": "1.a eleccion",
+          "options": [
+            {
+              "drug": "Paracetamol",
+              "note": "Mejor perfil GI/renal/CV.",
+              "warn": "Vigilar dosis maxima; precaucion en hepatopatia."
+            }
+          ]
+        },
+        {
+          "line": "2.a eleccion",
+          "options": [
+            {
+              "drug": "AINE (ibuprofeno)",
+              "note": "Si componente inflamatorio.",
+              "warn": "Precaucion GI, renal, CV y con anticoagulantes."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "tos seca"
+      ],
+      "title": "Tos seca",
+      "guideline": "Manejo sintomatico.",
+      "lines": [
+        {
+          "line": "Antes de medicar",
+          "options": [
+            {
+              "drug": "Descartar causa",
+              "note": "La tos seca persistente puede ser efecto del IECA.",
+              "warn": "Si toma IECA: derivar para evaluar cambio a ARA-II."
+            }
+          ]
+        },
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Dextrometorfano",
+              "note": "Antitusivo central para tos no productiva.",
+              "warn": "Riesgo serotoninergico con ISRS/IMAO. No en tos productiva."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "tos productiva",
+        "tos con flema",
+        "expectoracion"
+      ],
+      "title": "Tos productiva",
+      "guideline": "Manejo sintomatico.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Mucolitico/expectorante (ambroxol, guaifenesina)",
+              "note": "Hidratacion abundante ayuda.",
+              "warn": "NO usar antitusivos en tos productiva: retienen secreciones."
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Tos >3 semanas, fiebre, disnea, sangre, o fumador con cambio de tos."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "hemorroides",
+        "almorranas"
+      ],
+      "title": "Hemorroides",
+      "guideline": "Manejo sintomatico de mostrador.",
+      "lines": [
+        {
+          "line": "1.a linea (medidas)",
+          "options": [
+            {
+              "drug": "Higiene + fibra + agua + banos de asiento tibios",
+              "note": "Base del tratamiento; ablanda heces y reduce esfuerzo.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Topico (corto plazo)",
+          "options": [
+            {
+              "drug": "Crema/supositorio con anestesico local +/- corticoide suave",
+              "note": "Alivio del dolor y prurito por pocos dias.",
+              "warn": "No usar corticoide topico de forma prolongada."
+            }
+          ]
+        },
+        {
+          "line": "Coadyuvante oral",
+          "options": [
+            {
+              "drug": "Flebotonico (diosmina/hesperidina)",
+              "note": "Puede ayudar en crisis.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Sangrado abundante o persistente, dolor intenso/trombosis, cambio del habito intestinal, o >50 anos con sangrado (descartar otra causa)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "estrenimiento",
+        "constipacion",
+        "no puedo evacuar"
+      ],
+      "title": "Estrenimiento",
+      "guideline": "Manejo escalonado.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Fibra + agua + actividad fisica",
+              "note": "Medida base.",
+              "warn": ""
+            },
+            {
+              "drug": "Formador de bolo (psyllium/plantago)",
+              "note": "Aumentar liquidos al usarlo.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "2.a linea",
+          "options": [
+            {
+              "drug": "Osmotico (PEG, lactulosa)",
+              "note": "Eficaz y bien tolerado.",
+              "warn": "Lactulosa puede dar gases."
+            }
+          ]
+        },
+        {
+          "line": "Rescate (corto plazo)",
+          "options": [
+            {
+              "drug": "Estimulante (senosidos, bisacodilo)",
+              "note": "Uso puntual.",
+              "warn": "No usar de forma cronica."
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Sangre, perdida de peso, dolor intenso, o cambio reciente y persistente del habito."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "diarrea",
+        "diarrea aguda"
+      ],
+      "title": "Diarrea aguda",
+      "guideline": "Prioridad: rehidratacion.",
+      "lines": [
+        {
+          "line": "1.a linea (clave)",
+          "options": [
+            {
+              "drug": "Sales de rehidratacion oral (SRO)",
+              "note": "Lo mas importante, sobre todo en ninos y ancianos.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Loperamida",
+              "note": "Reduce numero de deposiciones.",
+              "warn": "NO usar si fiebre alta o sangre en heces."
+            },
+            {
+              "drug": "Probioticos / racecadotrilo",
+              "note": "Coadyuvantes.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Sangre/moco, fiebre alta, signos de deshidratacion, lactantes/ancianos, o >48-72 h sin mejorar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "acidez",
+        "pirosis",
+        "reflujo",
+        "ardor de estomago",
+        "agruras"
+      ],
+      "title": "Acidez / reflujo",
+      "guideline": "Manejo sintomatico (ERGE leve).",
+      "lines": [
+        {
+          "line": "1.a linea (a demanda)",
+          "options": [
+            {
+              "drug": "Antiacido (hidroxido Al/Mg, alginato)",
+              "note": "Alivio rapido y puntual.",
+              "warn": "Separar de otros farmacos (quelacion)."
+            },
+            {
+              "drug": "Medidas: elevar cabecera, evitar comidas tardias/grasas",
+              "note": "-",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "2.a linea",
+          "options": [
+            {
+              "drug": "AntiH2 (famotidina) o IBP corto (omeprazol)",
+              "note": "Para sintomas frecuentes, ciclos cortos.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Disfagia, perdida de peso, vomito, heces negras, >55 con sintomas nuevos, o sintomas persistentes pese al tratamiento."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "faringitis",
+        "dolor de garganta",
+        "garganta"
+      ],
+      "title": "Dolor de garganta",
+      "guideline": "Sintomatico + triage.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Analgesico (paracetamol/ibuprofeno)",
+              "note": "-",
+              "warn": ""
+            },
+            {
+              "drug": "Pastillas/spray con anestesico local",
+              "note": "Alivio local.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "Posible faringitis estreptococica si fiebre alta + placas + adenopatias sin tos.",
+              "warn": "El antibiotico requiere prescripcion. Derivar tambien si dificultad para respirar o tragar."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "resfriado",
+        "catarro",
+        "congestion nasal",
+        "gripe"
+      ],
+      "title": "Resfriado comun / congestion",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Analgesico/antipiretico (paracetamol)",
+              "note": "-",
+              "warn": ""
+            },
+            {
+              "drug": "Descongestivo topico (oximetazolina)",
+              "note": "Maximo 3-5 dias.",
+              "warn": "No prolongar: efecto rebote. Cuidado en HTA no controlada."
+            },
+            {
+              "drug": "Suero salino nasal",
+              "note": "Seguro, util en ninos.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Disnea, fiebre alta persistente, o empeoramiento tras varios dias."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "rinitis alergica",
+        "alergia nasal",
+        "estornudos"
+      ],
+      "title": "Rinitis alergica",
+      "guideline": "Estrategia ARIA.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Antihistaminico oral no sedante (loratadina, cetirizina)",
+              "note": "Para sintomas leves/intermitentes.",
+              "warn": ""
+            },
+            {
+              "drug": "Corticoide nasal (budesonida, mometasona)",
+              "note": "Mas eficaz en sintomas persistentes.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Coadyuvante",
+          "options": [
+            {
+              "drug": "Suero salino nasal",
+              "note": "-",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Sintomas que no ceden, sospecha de asma asociada."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "dismenorrea",
+        "colico menstrual",
+        "dolor menstrual",
+        "regla dolorosa"
+      ],
+      "title": "Dismenorrea",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "AINE (ibuprofeno, naproxeno)",
+              "note": "Iniciar al comienzo del dolor; mas eficaz asi.",
+              "warn": "Precaucion GI; tomar con alimentos."
+            }
+          ]
+        },
+        {
+          "line": "Coadyuvante",
+          "options": [
+            {
+              "drug": "Calor local",
+              "note": "-",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Dolor que no cede, sangrado anormal o dolor pelvico atipico."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "nausea",
+        "nauseas",
+        "vomito",
+        "vomitos",
+        "mareo de viaje",
+        "cinetosis"
+      ],
+      "title": "Nauseas y vomitos",
+      "guideline": "Sintomatico + triage.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Dimenhidrinato (cinetosis/mareo de viaje)",
+              "note": "Tomar antes del viaje.",
+              "warn": "Somnolencia; cuidado al conducir."
+            },
+            {
+              "drug": "Medidas: liquidos en pequenas tomas, dieta blanda",
+              "note": "-",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Vomito persistente, signos de deshidratacion, dolor abdominal intenso, embarazo o sangre."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "cistitis",
+        "infeccion urinaria",
+        "itu",
+        "ardor al orinar"
+      ],
+      "title": "Cistitis / ITU",
+      "guideline": "Triage (los antibioticos son de prescripcion).",
+      "lines": [
+        {
+          "line": "De mostrador",
+          "options": [
+            {
+              "drug": "Hidratacion + analgesico para el ardor",
+              "note": "Alivio mientras se valora.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica para antibiotico",
+              "note": "El tratamiento antibiotico requiere prescripcion.",
+              "warn": "Derivar SIEMPRE si fiebre, dolor lumbar, embarazo, hombres, recurrencias o sangre en orina."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "micosis",
+        "hongos en la piel",
+        "pie de atleta",
+        "tina"
+      ],
+      "title": "Micosis cutanea",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Antifungico topico (clotrimazol, terbinafina, miconazol)",
+              "note": "2-4 semanas; mantener la zona seca.",
+              "warn": "Completar el tratamiento aunque mejore antes."
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Afectacion de unas, lesiones extensas, paciente diabetico o sin mejoria."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "candidiasis",
+        "candidiasis vaginal",
+        "hongos vaginales"
+      ],
+      "title": "Candidiasis vaginal",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Antifungico topico/ovulo (clotrimazol)",
+              "note": "Pauta corta.",
+              "warn": ""
+            },
+            {
+              "drug": "Fluconazol oral (si disponible OTC)",
+              "note": "Dosis unica en casos no complicados.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Primer episodio sin diagnostico, embarazo, recurrente o sintomas atipicos."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "piojos",
+        "pediculosis",
+        "liendres"
+      ],
+      "title": "Pediculosis (piojos)",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Pediculicida topico (permetrina 1%)",
+              "note": "Repetir a los 7-9 dias.",
+              "warn": "Usar peine fino para liendres."
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Fallo del tratamiento o lesiones sobreinfectadas."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "dermatitis",
+        "prurito",
+        "picazon",
+        "alergia en la piel",
+        "ronchas"
+      ],
+      "title": "Dermatitis / prurito",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Antihistaminico oral (si picor)",
+              "note": "-",
+              "warn": ""
+            },
+            {
+              "drug": "Corticoide topico suave (hidrocortisona)",
+              "note": "Ciclo corto en zonas pequenas.",
+              "warn": "Evitar cara/pliegues de forma prolongada."
+            },
+            {
+              "drug": "Emolientes/hidratacion",
+              "note": "-",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Lesiones extensas, infectadas, que no mejoran o sospecha de reaccion grave."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "herpes labial",
+        "fuego labial",
+        "ampolla en el labio"
+      ],
+      "title": "Herpes labial",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Antiviral topico (aciclovir)",
+              "note": "Aplicar al primer sintoma (hormigueo).",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Inmunodeprimidos, episodios frecuentes/graves o afectacion ocular."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "insomnio",
+        "no puedo dormir"
+      ],
+      "title": "Insomnio ocasional",
+      "guideline": "Sintomatico (corto plazo).",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Higiene del sueno",
+              "note": "Horarios, evitar pantallas/cafeina, ambiente oscuro.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Puntual",
+          "options": [
+            {
+              "drug": "Antihistaminico sedante (difenhidramina, doxilamina)",
+              "note": "Uso ocasional y corto.",
+              "warn": "Cuidado en ancianos (efecto anticolinergico) y al conducir."
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Insomnio cronico, ansiedad/depresion asociada o comorbilidades."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "migrana",
+        "jaqueca",
+        "cefalea",
+        "dolor de cabeza"
+      ],
+      "title": "Cefalea / migrana",
+      "guideline": "Sintomatico + triage.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Analgesico/AINE temprano (ibuprofeno, naproxeno, paracetamol)",
+              "note": "Mas eficaz al inicio del dolor.",
+              "warn": "Cuidado con el abuso de analgesicos (cefalea de rebote)."
+            }
+          ]
+        },
+        {
+          "line": "Derivar (urgente)",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Cefalea subita e intensa, focalidad neurologica, fiebre con rigidez de nuca, cambio de patron o primera cefalea intensa >50 anos."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "picadura",
+        "picaduras",
+        "picadura de insecto"
+      ],
+      "title": "Picaduras de insectos",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Antihistaminico oral o topico + frio local",
+              "note": "-",
+              "warn": ""
+            },
+            {
+              "drug": "Corticoide topico suave",
+              "note": "Para inflamacion local.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar (emergencia)",
+          "options": [
+            {
+              "drug": "Atencion urgente",
+              "note": "-",
+              "warn": "Reaccion sistemica/anafilaxia (dificultad respiratoria, hinchazon generalizada) o signos de celulitis."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "quemadura solar",
+        "insolacion leve"
+      ],
+      "title": "Quemadura solar leve",
+      "guideline": "Sintomatico.",
+      "lines": [
+        {
+          "line": "Sintomatico",
+          "options": [
+            {
+              "drug": "Emolientes/aloe + hidratacion + AINE para el dolor",
+              "note": "-",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Ampollas extensas, fiebre o signos de insolacion (mareo, confusion)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "keys": [
+        "deshidratacion",
+        "rehidratacion"
+      ],
+      "title": "Deshidratacion leve",
+      "guideline": "Reposicion oral.",
+      "lines": [
+        {
+          "line": "1.a linea",
+          "options": [
+            {
+              "drug": "Sales de rehidratacion oral (SRO)",
+              "note": "Tomas pequenas y frecuentes.",
+              "warn": ""
+            }
+          ]
+        },
+        {
+          "line": "Derivar",
+          "options": [
+            {
+              "drug": "Valoracion medica",
+              "note": "-",
+              "warn": "Deshidratacion moderada/grave, no tolera liquidos, lactantes o ancianos."
+            }
+          ]
+        }
       ]
     }
   ]

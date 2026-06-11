@@ -1,0 +1,24 @@
+{
+  "version": "2026.06.10",
+  "scale": "Anticholinergic Cognitive Burden (ACB)",
+  "_AVISO": "Puntajes orientativos basados en la escala ACB publicada (Boustani et al.). Verificar contra la fuente. 0=ninguno, 1=leve, 2-3=marcado. Una carga total >=3 se asocia a mayor riesgo de efectos adversos (confusion, caidas, retencion urinaria), sobre todo en mayores.",
+  "scores": {
+    "diphenhydramine": 3,
+    "chlorpheniramine": 3,
+    "hydroxyzine": 3,
+    "promethazine": 3,
+    "amitriptyline": 3,
+    "oxybutynin": 3,
+    "paroxetine": 3,
+    "quetiapine": 3,
+    "olanzapine": 3,
+    "dimenhydrinate": 3,
+    "hyoscine butylbromide": 3,
+    "haloperidol": 1,
+    "trazodone": 1,
+    "ranitidine": 1,
+    "codeine": 1,
+    "furosemide": 1,
+    "digoxin": 1
+  }
+}

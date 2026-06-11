@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import config, cache, engine
-from .routers import drugs, engine_routes, sources
+from .routers import drugs, engine_routes, sources, calc
 
 app = FastAPI(
     title="CDSS de Mostrador - API",
@@ -38,6 +38,7 @@ app.add_middleware(
 app.include_router(drugs.router)
 app.include_router(engine_routes.router)
 app.include_router(sources.router)
+app.include_router(calc.router)
 
 
 @app.get("/health", tags=["meta"])

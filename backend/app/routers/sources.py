@@ -54,6 +54,10 @@ async def openfda_label(inn: str):
         "data": {
             "interactions": _join(res.get("drug_interactions")),
             "indications": _join(res.get("indications_and_usage")),
+            "dosage": _join(res.get("dosage_and_administration")),
+            "specific_populations": _join(res.get("use_in_specific_populations")),
+            "pediatric": _join(res.get("pediatric_use")),
+            "geriatric": _join(res.get("geriatric_use")),
             "boxed": _join(res.get("boxed_warning")),
             "warnings": _join(res.get("warnings_and_cautions")) or _join(res.get("warnings")),
             "contraindications": _join(res.get("contraindications")),
