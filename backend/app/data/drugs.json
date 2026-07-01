@@ -1,5 +1,5 @@
 {
-  "version": "2026.06.11-full",
+  "version": "2026.07.01-full",
   "source": "RxClass/NLM (todas las clases ATC) + curaduria (curated_drugs.json).",
   "note": "Generado por enrich.py. La curaduria vive en curated_drugs.json.",
   "drugs": [
