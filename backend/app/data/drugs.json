@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.01-full",
+  "version": "2026.08.01-full",
   "source": "RxClass/NLM (todas las clases ATC) + curaduria (curated_drugs.json).",
   "note": "Generado por enrich.py. La curaduria vive en curated_drugs.json.",
   "drugs": [
@@ -3472,6 +3472,15 @@
       "tags": [],
       "syn": [
         "buflomedil"
+      ]
+    },
+    {
+      "name": "Bulevirtide",
+      "inn": "bulevirtide",
+      "atc": "J05AX",
+      "tags": [],
+      "syn": [
+        "bulevirtide"
       ]
     },
     {
@@ -10946,6 +10955,15 @@
       "tags": [],
       "syn": [
         "gadopiclenol"
+      ]
+    },
+    {
+      "name": "Gadoquatrane",
+      "inn": "gadoquatrane",
+      "atc": "V08CA",
+      "tags": [],
+      "syn": [
+        "gadoquatrane"
       ]
     },
     {
