@@ -1,5 +1,5 @@
 {
-  "version": "2026.08.01-full",
+  "version": "2026.09.01-full",
   "source": "RxClass/NLM (todas las clases ATC) + curaduria (curated_drugs.json).",
   "note": "Generado por enrich.py. La curaduria vive en curated_drugs.json.",
   "drugs": [
@@ -8745,6 +8745,15 @@
       "tags": [],
       "syn": [
         "ensifentrine"
+      ]
+    },
+    {
+      "name": "Ensitrelvir",
+      "inn": "ensitrelvir",
+      "atc": "J05AE",
+      "tags": [],
+      "syn": [
+        "ensitrelvir"
       ]
     },
     {
